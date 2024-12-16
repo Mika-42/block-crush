@@ -4,7 +4,7 @@
 
 #include "grid.h"
 
-#include <stdlib.h>
+#include <stdio.h>
 
 ErrorCode gridAlloc(Grid *grid) {
     if (grid->columns == 0 || grid->rows == 0) {
@@ -26,8 +26,20 @@ ErrorCode gridFree(Grid *grid) {
     return TETRIS_FREE_DYNAMIC_ALLOCATION_FAILED;
 }
 
-void gridFill(Grid *grid) {
+void gridFill(const Grid *grid) {
+    for(unsigned int i = 0; i < grid->rows; ++i) {
+        for(unsigned int j = 0; j < grid->columns; ++j) {
+            const char* letter = "AOHX";
+            grid->data[i * grid->columns + j] = letter[rand()%4];
+        }
+    }
 }
 
 void gridPrint(Grid *grid) {
+    for(unsigned int i=0;i<grid->rows;++i) {
+        printf("\n");
+        for(unsigned int j=0;j<grid->columns;++j) {
+            printf("%c",grid->data[i * grid->columns + j]);
+        }
+    }
 }
