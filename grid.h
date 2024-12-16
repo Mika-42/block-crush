@@ -52,6 +52,22 @@ void gridFill(const Grid* grid);
  * @brief affiche une grille dans la console
  * @param grid structure à afficher
  */
-void gridPrint(Grid* grid);
+void gridPrint(const Grid* grid);
+
+/**
+ * @brief efface une lettre à une certaine position dans le tableau
+ * @param grid
+ * @param rows emplacement de la ligne
+ * @param columns emplacement de la colonne
+ */
+ErrorCode gridClear(const Grid* grid, unsigned int rows, unsigned int columns);
+
+void gridFallElement(const Grid* grid);
+
+//---
+bool neighbourIsSameTop(const Grid* grid, unsigned int row, unsigned int column);
+bool neighbourIsSameBottom(const Grid* grid, unsigned int row, unsigned int column);
+bool neighbourIsSameLeft(const Grid* grid, unsigned int row, unsigned int column);
+bool neighbourIsSameRight(const Grid* grid, unsigned int row, unsigned int column);
 
 #endif //GRID_H
