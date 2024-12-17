@@ -43,8 +43,19 @@ void gridPrint(const Grid *grid) {
     }
 }
 
-void gridFallElement(const Grid *grid) {
+ErrorCode gridEmptyBox(const Grid *grid, unsigned int rows, unsigned int columns) {
+    if (grid == NULL || grid->data == NULL) {
+        return TETRIS_DYNAMIC_ALLOCATION_FAILED;
+    }
+    if (rows >= grid->rows || columns >= grid->columns) {
+        return TETRIS_GRID_SIZE_ERROR;
+    }
 
+    grid->data[rows * grid->columns + columns] = ' ';
+    return TETRIS_SUCCESS;
+}
+
+void gridFallElement(const Grid *grid) {
     // on s'arrete une ligne avant pour ne pas chercher
     // le voisin du dessous de la dernière ligne
     for (unsigned int i = 0; i < grid->rows - 1; ++i) {
@@ -57,24 +68,16 @@ void gridFallElement(const Grid *grid) {
 
             // si la case actuelle n'est pas vide mais la case en dessous l'est
             // alors on permute les deux cases
-            if (grid->data[index] != ' ' && grid->data[nextIndex] == ' ') {
+            if (!isEmptyBox(grid, i, j) && isEmptyBox(grid, i, j + 1)) {
                 grid->data[nextIndex] = grid->data[index];
-                grid->data[index] = ' ';
+                gridEmptyBox(grid, i, j);
             }
         }
     }
 }
 
-ErrorCode gridClear(const Grid *grid, unsigned int rows, unsigned int columns) {
-    if (grid == NULL || grid->data == NULL) {
-        return TETRIS_GRID_SIZE_ERROR;
-    }
-    if (rows >= grid->rows || columns >= grid->columns) {
-        return TETRIS_GRID_SIZE_ERROR;
-    }
-
-    grid->data[rows * grid->columns + columns] = ' ';
-    return TETRIS_SUCCESS;
+bool isEmptyBox(const Grid *grid, const unsigned int row, const unsigned int column) {
+    return grid->data[row * grid->columns + column] == ' ';
 }
 
 bool neighbourIsSameTop(const Grid *grid, const unsigned int row, const unsigned int column) {

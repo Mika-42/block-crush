@@ -57,13 +57,20 @@ void gridPrint(const Grid* grid);
 /**
  * @brief efface une lettre à une certaine position dans le tableau
  * @param grid
- * @param rows emplacement de la ligne
- * @param columns emplacement de la colonne
+ * @param rows
+ * @param columns
  */
-ErrorCode gridClear(const Grid* grid, unsigned int rows, unsigned int columns);
+ErrorCode gridEmptyBox(const Grid* grid, unsigned int rows, unsigned int columns);
 
+/**
+ * @brief fait tomber les élément vers le bas de la grille s'il y a un vide en dessous d'eux
+ * @param grid
+ */
 void gridFallElement(const Grid* grid);
 
+bool isEmptyBox(const Grid* grid, unsigned int row, unsigned int column);
+
+void swapBoxes(Grid* grid, unsigned int row1, unsigned int column1, unsigned int row2, unsigned int column2);
 //---
 bool neighbourIsSameTop(const Grid* grid, unsigned int row, unsigned int column);
 bool neighbourIsSameBottom(const Grid* grid, unsigned int row, unsigned int column);
