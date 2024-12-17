@@ -17,8 +17,8 @@ int main(void) {
 
     gridAlloc(&grid);
     gridFill(&grid);
-    gridClear(&grid, 0, 2);
-    gridClear(&grid, 1, 2);
+    gridEmptyBox(&grid, 0, 2);
+    gridEmptyBox(&grid, 1, 2);
     gridFallElement(&grid);
 
     gridPrint(&grid);
