@@ -6,4 +6,5 @@ set(CMAKE_C_STANDARD 23)
 add_executable(projet_info main.c
         grid.c
         grid.h
-        error.h)
+        dataType.h
+)

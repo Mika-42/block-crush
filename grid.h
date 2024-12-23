@@ -5,103 +5,94 @@
 #ifndef GRID_H
 #define GRID_H
 
-#include <time.h>
-#include "error.h"
-#include <stdlib.h>
+#include "dataType.h"
 
-typedef unsigned int ui32;
-
-/**
- * Structure content les données relatives à la grille
- * - columns : nombre de colonnes
- * - rows : nombre de lignes
- * - data : données de la grille
- */
 typedef struct {
-    ui32 columns;
-    ui32 rows;
-    char *data;
+	size_t columns;
+	size_t rows;
+	char data[maxSequencePossible][longestSequencePossible];
 } Grid;
 
 /**
- * @brief alloue dynamiquement un tableau de taille colonnes * lignes
- * @param grid pointeur sur la structure Grid à allouer
- * @return ErrorCode
- *  TETRIS_GRID_SIZE_ERROR                - taille de grille négative ou nulle
- *  TETRIS_DYNAMIC_ALLOCATION_FAILED      - allocation dynamique a échouée
- *  TETRIS_SUCCESS                        - tout est correct
+ * @brief Remplir une grille avec les lettres A, O, X, H de manière aléatoire
+ * @param grid Structure à remplire
  */
-ErrorCode gridAlloc(Grid *grid);
+void gridFill(Grid *grid);
 
 /**
- * @brief désalloue la mémoire précédemment allouée
- * @param grid pointeur sur la structure Grid à désallouer
- * @return ErrorCode
- *  TETRIS_FREE_DYNAMIC_ALLOCATION_FAILED - la libération de l'espace allouée a échoué
- *  TETRIS_SUCCESS                        - tout est correct
- */
-ErrorCode gridFree(Grid *grid);
-
-/**
- * @brief remplire une grille avec les lettres A, O, X, H de manière aléatoire
- * @param grid structure à remplire
- */
-void gridFill(const Grid *grid);
-
-/**
- * @brief affiche une grille dans la console
+ * @brief Affiche une grille dans la console
  * @param grid structure à afficher
  */
 void gridPrint(const Grid *grid);
 
 /**
- * @brief efface une lettre à une certaine position dans le tableau
+ * @brief Efface une lettre à une certaine position dans le tableau
  * @param grid
- * @param rows
- * @param columns
+ * @param coord
  * @return ErrorCode
- *  TETRIS_DYNAMIC_ALLOCATION_FAILED      - le pointeur grid ou grid->data est nul
- *  TETRIS_GRID_SIZE_ERROR                - tentative d'accès à des données hors du tableau
- *  TETRIS_SUCCESS                        - tout est correct
+ *  DYNAMIC_ALLOCATION_FAILED      - le pointeur grid ou grid->data est nul
+ *  GRID_SIZE_ERROR                - tentative d'accès à des données hors du tableau
+ *  SUCCESS                        - tout est correct
  */
-ErrorCode gridEmptyBox(const Grid *grid, ui32 rows, ui32 columns);
+ErrorCode gridEmptyBox(Grid *grid, Coordinate coord);
 
 /**
- * @brief fait tomber les élément vers le bas de la grille s'il y a un vide en dessous d'eux
+ * @brief Fait tomber les éléments vers le bas de la grille s'il y a un vide en dessous d'eux
  * @param grid
  */
-void gridFallElement(const Grid *grid);
+void gridFallElement(Grid *grid);
 
 /**
  * @brief vérifie si la case [row][column] est vide
  * @param grid
- * @param row
- * @param column
+ * @param coord
  * @return bool
  */
-bool isEmptyBox(const Grid *grid, ui32 row, ui32 column);
+bool isEmptyBox(const Grid *grid, Coordinate coord);
 
 /**
- * @brief échange de place deux élément de coordonées [row1][column1] et [row2][column2]
+ * @brief Échange de place deux éléments de coordonnées [row1][column1] et [row2][column2]
  * @param grid
- * @param row1
- * @param column1
- * @param row2
- * @param column2
- * @return bool
- *  TETRIS_DYNAMIC_ALLOCATION_FAILED      - le pointeur grid ou grid->data est nul
- *  TETRIS_GRID_SIZE_ERROR                - tentative d'accès à des données hors du tableau
- *  TETRIS_SUCCESS                        - tout est correct
+ * @param coord1
+ * @param coord2
+ * @return ErrorCode
+ *  DYNAMIC_ALLOCATION_FAILED      - le pointeur grid ou grid->data est nul
+ *  GRID_SIZE_ERROR                - tentative d'accès à des données hors du tableau
+ *  SUCCESS                        - tout est correct
  */
-ErrorCode swapBoxes(const Grid *grid, ui32 row1, ui32 column1, ui32 row2, ui32 column2);
+ErrorCode swapBoxes(Grid *grid, Coordinate coord1, Coordinate coord2);
 
-//---
-// bool neighbourIsSameTop(const Grid *grid, ui32 row, ui32 column);
-//
-// bool neighbourIsSameBottom(const Grid *grid, ui32 row, ui32 column);
-//
-// bool neighbourIsSameLeft(const Grid *grid, ui32 row, ui32 column);
-//
-// bool neighbourIsSameRight(const Grid *grid, ui32 row, ui32 column);
+/**
+ * @brief Vérifie si les coordonnées n'accèdent pas à des espaces mémoires en dehors de la grille
+ * @param grid
+ * @param coord
+ * @return bool
+ */
+bool gridIsValidCoordinate(const Grid *grid, Coordinate coord);
 
+/**
+ * @brief Recherche une séquence dans la grille à partir d'un point de départ
+ * @param grid
+ * @param startCoord
+ * @param sequence
+ */
+void findSequence(const Grid *grid, const Coordinate startCoord, Sequence *sequence);
+
+/**
+ * @brief Récupère toute les séquences d'un caractère
+ * @param grid
+ * @param letter
+ * @param sequences
+ */
+void getAllSequences(const Grid *grid, const char letter, SequenceArray* sequences);
+
+/**
+ * @brief Vérifie si deux coordonnées sont égales
+ * @param coord1
+ * @param coord2
+ * @return bool
+ */
+bool coordEquals(const Coordinate coord1, const Coordinate coord2);
+
+size_t removeLongestSequences(Grid *grid);
 #endif //GRID_H
