@@ -37,8 +37,8 @@ constexpr size_t longestSequencePossible = 72;
 constexpr size_t maxSequencePossible = 36;
 
 typedef struct {
-	int row;
-	int col;
+	size_t row;
+	size_t col;
 } Coordinate;
 
 typedef struct {

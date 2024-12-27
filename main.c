@@ -82,30 +82,56 @@ int main(void) {
 	//
 	gridFill(&grid);
 	//
-	printf("\nstep 1-Initial grid----------------------\n");
+
+	size_t step = 0;
+	printf("\nstep %llu----------------------\n", ++step);
 	gridPrint(&grid);
 
-	printf("\nstep 2-remove first sequence------------------------\n");
-	removeLongestSequences(&grid);
+
+	while (removeLongestSequences(&grid) != 0) {
+		printf("\nstep %llu----------------------\n", ++step);
+		gridPrint(&grid);
+	}
+
+	printf("\nstep %llu----------------------\n", ++step);
 	gridFallElement(&grid);
 	gridPrint(&grid);
 
-	printf("\nstep 3-swap boxes----------------------\n");
-	swapBoxes(&grid, (Coordinate){1, 1}, (Coordinate){2, 1});
+	printf("\nstep %llu----------------------\n", ++step);
+	swapBoxes(&grid, (Coordinate){3, 5}, (Coordinate){3, 6});
+	gridPrint(&grid);
 
-	//gridPrint(&grid);
-
-	printf("\nstep 4-remove second sequences----------------------\n");
+	printf("\nstep %llu----------------------\n", ++step);
 	removeLongestSequences(&grid);
+	gridPrint(&grid);
+
+	printf("\nstep %llu----------------------\n", ++step);
 	gridFallElement(&grid);
 	gridPrint(&grid);
 
-	//
-	// printf("\nstep 2-----------------------\n");
-	// gridPrint(&grid);
-	// printf("\nstep 3-----------------------\n");
-	// gridFallElement(&grid);
-	// gridFallElement(&grid);
+	printf("\nstep %llu----------------------\n", ++step);
+	swapBoxes(&grid, (Coordinate){4, 6}, (Coordinate){4, 7});
+	gridPrint(&grid);
+
+	printf("\nstep %llu----------------------\n", ++step);
+	removeLongestSequences(&grid);
+	gridPrint(&grid);
+
+	printf("\nstep %llu----------------------\n", ++step);
+	gridFallElement(&grid);
+	gridPrint(&grid);
+
+	printf("\nstep %llu----------------------\n", ++step);
+	swapBoxes(&grid, (Coordinate){2, 2}, (Coordinate){3, 2});
+	gridPrint(&grid);
+
+	printf("\nstep %llu----------------------\n", ++step);
+	removeLongestSequences(&grid);
+	gridPrint(&grid);
+
+	printf("\nstep %llu----------------------\n", ++step);
+	gridFallElement(&grid);
+	gridPrint(&grid);
 
 	return 42;
 }
