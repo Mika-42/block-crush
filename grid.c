@@ -5,6 +5,7 @@
 #include "grid.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <conio.h>
 #include <string.h>
 
 static bool visitedInit = false;
@@ -25,9 +26,49 @@ void gridFill(Grid *grid) {
 }
 
 void gridPrint(const Grid *grid) {
-	for (size_t i = 0; i < grid->rows; ++i) {
-		printf("%s\n", grid->data[i]);
+
+	getchar();
+	system("cls");
+
+	printf("    ");
+	for (char j = 'A'; j < grid->columns + 'A'; ++j) {
+		printf("%c ", j);
 	}
+
+
+	printf("\n   ┏");
+	for (size_t j = 1; j < grid->columns; ++j) {
+		printf("─┬");
+	}
+	printf("─┓\n");
+
+	for (size_t i = 0; i < grid->rows; ++i) {
+
+		i < 9 ? printf(" %llu", i+1) : printf("%llu", i+1);
+
+		printf(" ");
+
+		for (size_t j = 0; j < grid->columns; ++j) {
+
+			printf("│%c", grid->data[i][j]);
+		}
+		printf("│\n");
+
+		if (i != grid->rows - 1) {
+			printf("   ├");
+
+			for(size_t j = 1; j < grid->columns; ++j) {
+				printf("─┼");
+			}
+			printf("─┤\n");
+		}
+	}
+
+	printf("   ┗─");
+	for (size_t j = 1; j < grid->columns; ++j) {
+		printf("┴─");
+	}
+	printf("┛\n\n");
 }
 
 ErrorCode gridEmptyBox(Grid *grid, const Coordinate coord) {

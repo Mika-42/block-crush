@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -69,69 +70,75 @@ void runGame() {
 	}
 }
 
-int score(const int X, const int N) {
+size_t score(const size_t X, const size_t N) {
  return (N + 1) * (X - 1) * (X - 1);
 }
 
+size_t deleted = 0;
+size_t removeSeqWithScore(Grid *grid) {
+	size_t ret = 0;
+	size_t scoring = 0;
+	while ((ret = removeLongestSequences(grid))) {
+		scoring += score(ret, deleted);
+		deleted++;
+		gridPrint(grid);
+	}
+	return scoring;
+}
+
+size_t updateBoxes(Grid *grid) {
+	size_t result = 0;
+
+	result += removeSeqWithScore(grid);
+	gridFallElement(grid);
+	gridPrint(grid);
+	result += removeSeqWithScore(grid);
+
+	return result;
+}
+
 int main(void) {
-	// srand(42); //time(nullptr)
+	SetConsoleOutputCP(CP_UTF8);
+	srand(42); //time(nullptr)
 	//
 	// startMenu();
 	//
 	Grid grid = {10, 5};
-	//
+
 	gridFill(&grid);
-	//
+
 
 	size_t step = 0;
-	printf("\nstep %llu----------------------\n", ++step);
 	gridPrint(&grid);
 
+	while (1) {};
 
-	while (removeLongestSequences(&grid) != 0) {
-		printf("\nstep %llu----------------------\n", ++step);
-		gridPrint(&grid);
-	}
+	size_t result = 0;
 
-	printf("\nstep %llu----------------------\n", ++step);
-	gridFallElement(&grid);
+	result += updateBoxes(&grid);
+
+	swapBoxes(&grid, (Coordinate){0, 4}, (Coordinate){1, 4});
 	gridPrint(&grid);
 
-	printf("\nstep %llu----------------------\n", ++step);
-	swapBoxes(&grid, (Coordinate){3, 5}, (Coordinate){3, 6});
+	result += updateBoxes(&grid);
+
+	swapBoxes(&grid, (Coordinate){3, 0}, (Coordinate){2, 0});
 	gridPrint(&grid);
 
-	printf("\nstep %llu----------------------\n", ++step);
-	removeLongestSequences(&grid);
+	result += updateBoxes(&grid);
+
+	swapBoxes(&grid, (Coordinate){2, 3}, (Coordinate){3, 3});
 	gridPrint(&grid);
 
-	printf("\nstep %llu----------------------\n", ++step);
-	gridFallElement(&grid);
+	result += updateBoxes(&grid);
+
+	swapBoxes(&grid, (Coordinate){4, 0}, (Coordinate){3, 0});
 	gridPrint(&grid);
 
-	printf("\nstep %llu----------------------\n", ++step);
-	swapBoxes(&grid, (Coordinate){4, 6}, (Coordinate){4, 7});
-	gridPrint(&grid);
+	result += updateBoxes(&grid);
 
-	printf("\nstep %llu----------------------\n", ++step);
-	removeLongestSequences(&grid);
-	gridPrint(&grid);
+	printf("\n\nscore: %llu\n", result);
 
-	printf("\nstep %llu----------------------\n", ++step);
-	gridFallElement(&grid);
-	gridPrint(&grid);
-
-	printf("\nstep %llu----------------------\n", ++step);
-	swapBoxes(&grid, (Coordinate){2, 2}, (Coordinate){3, 2});
-	gridPrint(&grid);
-
-	printf("\nstep %llu----------------------\n", ++step);
-	removeLongestSequences(&grid);
-	gridPrint(&grid);
-
-	printf("\nstep %llu----------------------\n", ++step);
-	gridFallElement(&grid);
-	gridPrint(&grid);
-
+	getchar();
 	return 42;
 }
