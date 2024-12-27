@@ -71,22 +71,6 @@ ErrorCode swapBoxes(Grid *grid, Coordinate coord1, Coordinate coord2);
 bool gridIsValidCoordinate(const Grid *grid, Coordinate coord);
 
 /**
- * @brief Recherche une séquence dans la grille à partir d'un point de départ
- * @param grid
- * @param startCoord
- * @param sequence
- */
-void findSequence(const Grid *grid, const Coordinate startCoord, Sequence *sequence);
-
-/**
- * @brief Récupère toute les séquences d'un caractère
- * @param grid
- * @param letter
- * @param sequences
- */
-void getAllSequences(const Grid *grid, const char letter, SequenceArray* sequences);
-
-/**
  * @brief Vérifie si deux coordonnées sont égales
  * @param coord1
  * @param coord2
@@ -95,4 +79,5 @@ void getAllSequences(const Grid *grid, const char letter, SequenceArray* sequenc
 bool coordEquals(const Coordinate coord1, const Coordinate coord2);
 
 size_t removeLongestSequences(Grid *grid);
+
 #endif //GRID_H
