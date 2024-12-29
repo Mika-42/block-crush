@@ -226,9 +226,15 @@ Sequence getLongestSequences(const Grid *grid);
 size_t gridRemoveSeqWithScore(Grid *grid, size_t *score);
 
 /**
- * @brief
- * @param[out] grid
- * @param[out] score
+ * @brief		Actualise les données de la grille
+ *				Supprime les séquences,
+ *				fait tomber les éléments,
+ *				actualise l'affichage,
+ *
+ * @note		Les paramètres grid et score sont passé par pointeur afin d'être modifié.
+ *
+ * @param[out] grid Grille à actualiser
+ * @param[out] score Récupération du score
  */
 void gridUpdateBoxes(Grid *grid, size_t *score);
 #endif //GRID_H

@@ -3,6 +3,18 @@
 //
 
 #include "game.h"
+#include "userInput.h"
+
+/**
+ * Cet en-tête est nécessaire pour utiliser 'printf'
+ */
+#include <stdio.h>
+
+/**
+ * Cet en-tête est nécessaire pour utiliser 'memset'
+ */
+#include <string.h>
+
 
 bool gameOver(Grid grid) {
 
@@ -49,4 +61,57 @@ bool gameOver(Grid grid) {
 
 size_t evaluateScore(const size_t X, const size_t N) {
 	return (N + 1) * (X - 1) * (X - 1);
+}
+
+size_t puzzleGame(Grid *grid) {
+
+	size_t playerScore = 0;
+
+	// Remplir toutes les cases de la grille avec des espaces
+	for (int i = 0; i < grid->rows; ++i)
+		memset(grid->data[i], ' ', grid->columns * sizeof(char));
+
+	// Afficher la grille vide
+	gridPrint(grid, playerScore);
+
+	// Remplir aléatoirement la grille
+	gridFill(grid);
+
+	// Afficher la nouvelle grille
+	gridPrint(grid, playerScore);
+
+	bool running = true;
+	while (running) {
+
+		// Actualiser la grille
+		gridUpdateBoxes(grid, &playerScore);
+
+		if (gameOver(*grid)) {
+			running = false;
+			continue;
+		}
+
+		//ask for swap
+		printf("Choisissez deux cases voisines a echanger\n");
+
+		Coordinate coord1 = {};
+		Coordinate coord2 = {};
+
+		/**
+		 * Demander la case 1 puis la 2
+		 * Si la 2 est invalide, redemander la 1
+		 */
+		do {
+			secureGetCase1(grid, &coord1);
+		}while (!secureGetCase2(*grid, coord1, &coord2));
+
+
+		gridSwapBoxes(grid, coord1, coord2);
+
+		gridPrint(grid, playerScore);
+
+	}
+
+	printf("\nGame over.\n");
+	return playerScore;
 }

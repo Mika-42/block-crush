@@ -70,44 +70,7 @@ void runGame() {
 	}
 }
 
-size_t puzzleGame(Grid *grid) {
 
-	size_t playerScore = 0;
-
-
-	gridPrint(grid, playerScore);
-
-	gridFill(grid);
-	gridPrint(grid, playerScore);
-
-	bool running = true;
-	while (running) {
-
-		gridUpdateBoxes(grid, &playerScore);
-
-		if (gameOver(*grid)) {
-			running = false;
-			continue;
-		}
-
-		//ask for swap
-		printf("Choisissez deux cases voisines a echanger\n");
-
-		Coordinate coord1 = {};
-		Coordinate coord2 = {};
-
-		do {
-			secureGetCase1(grid, &coord1);
-		}while (!secureGetCase2(*grid, coord1, &coord2));
-
-		gridSwapBoxes(grid, coord1, coord2);
-
-		gridPrint(grid, playerScore);
-
-	}
-	printf("\nGame over.\n");
-	return playerScore;
-}
 
 int main(void) {
 	SetConsoleOutputCP(CP_UTF8);
@@ -116,9 +79,6 @@ int main(void) {
 	// startMenu();
 	//
 	Grid grid = {5, 5, {}};
-	for (int i = 0; i < grid.rows; ++i)
-		memset(grid.data[i], ' ', grid.columns * sizeof(char));
-
 
 	const size_t scorePlayer = puzzleGame(&grid);
 	(void)scorePlayer;
