@@ -186,7 +186,7 @@ size_t removeLongestSequences(Grid *grid);
  *					   ┗──┴──┴──┴──┴──┴──┴──┴──┴──┴──┛
  *
  *				l'algorithme arrive au 'noeud' x0 et le garde en mémoire
- *				il va parcourir toute la branche x1, lorsque toute la branche
+ *				il va parcourir la branche x1, lorsque toute la branche
  *				a été visité, il repart du noeud x0 et parcours la branche x2
  *
  * @param[in]	grid Grille laquelle chercher la plus longue séquence
