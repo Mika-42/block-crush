@@ -2,7 +2,15 @@
 // Created by Matis on 29/12/2024.
 //
 
+/**
+ * Cet en-tête est nécessaire à l'utilisation des entrées/sorties
+ * 'printf', 'scanf'
+ */
+#include <stdio.h>
+
 #include "userInput.h"
+#include "grid.h"
+
 
 bool isUpperCaseLetter(const char letter) {
 	return letter >= 'A' && letter <= 'Z';
@@ -17,47 +25,7 @@ bool isNumber(const char letter) {
 }
 
 ErrorCode strToCoord(const char in_coord[2], Coordinate *coordinate) {
-	/**
-	 * Objectif:
-	 *		convertir une entrée utilisateur sous forme de coordonnées
-	 *
-	 *		Exemple:
-	 *			A1, a1, 1A, 1a -> (0, 0)
-	 *			B6, 6B, 6b, b6 -> (5, 1)
-	 *
-	 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	 * A L G O R I T H M E
-	 *
-	 * Données d'entrées
-	 *		coordonéesEntrée:		chaine de caractère de taille 2
-	 *		coordonéesSortie:		structure (x, y)
-	 *
-	 * DEBUT
-	 *		SI coordonéesEntrée[0] est une majuscule
-	 *		ET coordonéesEntrée[1] est un lettre (maj ou min)
-	 *
-	 *			x <- conversionEntier(coordonéesEntrée[1]) - 1
-	 *			y <- position de coordonéesEntrée[0] dans l'alphabet
-	 *
-	 *			coordonéesSortie <- (x, y)
-	 *
-	 *			renvoyer le code d'erreur SUCCESS
-	 *		FIN SI
-	 *
-	 *		SI coordonéesEntrée[0] est un chiffre
-	 *		ET coordonéesEntrée[1] est une lettre (maj ou min)
-	 *
-	 *			x <- position de coordonéesEntrée[0] dans l'alphabet
-	 *			y <- conversionEntier(coordonéesEntrée[1]) - 1
-	 *
-	 *			coordonéesSortie <- (x, y)
-	 *
-	 *			renvoyer le code d'erreur SUCCESS
-	 *		FIN SI
-	 *
-	 *		renvoyer le code d'erreur GENERIC_ERROR
-	 * FIN
-	 */
+
 	const bool isAlphaNum = isUpperCaseLetter(in_coord[0]) && isNumber(in_coord[1]);
 	const bool isNumAlpha = isUpperCaseLetter(in_coord[1]) && isNumber(in_coord[0]);
 	const bool is_alphaNum = isLowerCaseLetter(in_coord[0]) && isNumber(in_coord[1]);
@@ -88,4 +56,86 @@ ErrorCode strToCoord(const char in_coord[2], Coordinate *coordinate) {
 	}
 
 	return GENERIC_ERROR;
+}
+
+Coordinate getInputCoord(const char* msg) {
+
+	// variable temporaire pour récupérer la saisie
+	// 3 = 2 char + '\0'
+
+	char coordInput[3];
+
+	Coordinate coord= {};
+
+	do {
+		printf("%s", msg);
+		scanf("%2s", coordInput);
+
+		/**
+		 * On vide le tampon d'entrée pour ne pas
+		 * récupérer des caractères supplémentaires
+		 */
+		fflush(stdin);
+
+	}
+	while (strToCoord(coordInput, &coord) != SUCCESS);
+
+	return coord;
+}
+
+void secureGetCase1(const Grid *grid, Coordinate *coord) {
+	bool looping = true;
+	while (looping)
+	{
+		*coord = getInputCoord("Case 1: ");
+
+		if (!gridIsValidCoordinate(grid, *coord)) {
+			printf("Coordonnées invalides.\n");
+			continue;
+		}
+		if (gridIsEmptyBox(grid, *coord)) {
+			printf("Choisissez une case non-vide.\n");
+			continue;
+		}
+
+		looping = false;
+	}
+}
+
+bool secureGetCase2(Grid grid, const Coordinate coord1, Coordinate *coord2) {
+	bool looping = true;
+	while (looping)
+	{
+
+		*coord2 = getInputCoord("Case 2: ");
+
+		if (!gridIsValidCoordinate(&grid, *coord2)) {
+			printf("Coordonnées invalides.\n");
+			continue;
+		}
+
+		if (gridIsEmptyBox(&grid, *coord2)) {
+			printf("Choisissez une case non-vide.\n");
+			continue;
+		}
+
+		if (!isNeighbour(coord1, *coord2)) {
+			printf("Choisissez une case adjacente a la premiere.\n");
+			continue;
+		}
+
+		// On vérifie si la permutation aboutie à une séquence valide
+		gridSwapBoxes(&grid, coord1, *coord2);
+		const Sequence sequence = getLongestSequences(&grid);
+
+		if (sequence.length == 0) {
+			printf("Permutation non valide.\n");
+
+			return false;
+		}
+
+		looping = false;
+
+	}
+	return true;
 }

@@ -34,6 +34,15 @@ bool gridIsValidCoordinate(const Grid *grid, const Coordinate coord) {
 bool coordEquals(const Coordinate coord1, const Coordinate coord2) {
 	return coord1.col == coord2.col && coord1.row == coord2.row;
 }
+
+bool isNeighbour(const Coordinate coord, const Coordinate neighbour) {
+	const bool neighbourLeft = coord.row - 1 == neighbour.row && coord.col == neighbour.col;
+	const bool neighbourRight = coord.row + 1 == neighbour.row && coord.col == neighbour.col;
+	const bool neighbourTop = coord.row == neighbour.row && coord.col - 1 == neighbour.col;
+	const bool neighbourBottom = coord.row == neighbour.row && coord.col + 1 == neighbour.col;
+
+	return neighbourLeft || neighbourRight || neighbourTop || neighbourBottom;
+}
 //==================================================================================//
 
 void gridFill(Grid *grid) {
@@ -66,10 +75,10 @@ void gridFill(Grid *grid) {
 	}while (removeLongestSequences(grid));
 }
 
-void gridPrint(const Grid *grid) {
+void gridPrint(const Grid *grid,  const size_t playerScore) {
 
-	//Attendre 700ms
-	Sleep(700);
+	//Attendre 50ms
+	Sleep(50);
 
 	//Effacer la console
 	system("cls");
@@ -112,7 +121,8 @@ void gridPrint(const Grid *grid) {
 	for (size_t j = 1; j < grid->columns; ++j) {
 		printf("┴─");
 	}
-	printf("┛\n\n");
+	printf("┛\n");
+	printf("\tScore: %llu\n\n", playerScore);
 }
 
 ErrorCode gridEmptyBox(Grid *grid, const Coordinate coord) {
@@ -267,4 +277,31 @@ Sequence getLongestSequences(const Grid *grid) {
 	}
 
 	return sequence;
+}
+
+size_t gridRemoveSeqWithScore(Grid *grid, size_t *score) {
+	size_t deletedSequenceCount = 0;
+	size_t ret = 0, scoring = 0;
+	while ((ret = removeLongestSequences(grid))) {
+		scoring += evaluateScore(ret, deletedSequenceCount);
+		*score += scoring;
+		deletedSequenceCount++;
+		gridPrint(grid, *score);
+	}
+	return scoring;
+}
+
+void gridUpdateBoxes(Grid *grid, size_t *score) {
+	/*
+	 * Tant qu'il y a des séquences à supprimer
+	 *	1. Les supprimer
+	 *	2. Afficher la grille avec la séquence en moins
+	 *	3. Faire tomber les éléments en bas de la grille
+	 *	4. Afficher la grille
+	 */
+	while (gridRemoveSeqWithScore(grid, score)) {
+		gridPrint(grid, *score);
+		gridFallElement(grid);
+		gridPrint(grid, *score);
+	}
 }

@@ -9,4 +9,6 @@ add_executable(projet_info main.c
         dataType.h
         userInput.c
         userInput.h
+        game.c
+        game.h
 )

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+#include "game.h"
 #include "grid.h"
 #include "userInput.h"
 
@@ -68,114 +70,24 @@ void runGame() {
 	}
 }
 
-size_t score(const size_t X, const size_t N) {
- return (N + 1) * (X - 1) * (X - 1);
-}
-
-size_t deleted = 0;
-size_t removeSeqWithScore(Grid *grid) {
-	size_t ret = 0;
-	size_t scoring = 0;
-	while ((ret = removeLongestSequences(grid))) {
-		scoring += score(ret, deleted);
-		deleted++;
-		gridPrint(grid);
-	}
-	return scoring;
-}
-
-size_t updateBoxes(Grid *grid) {
-	size_t result = 0, ret = 0;
-
-	while ((ret = removeSeqWithScore(grid))){
-	result += ret;
-	gridPrint(grid);
-	gridFallElement(grid);
-	gridPrint(grid);
-	}
-	return result;
-}
-
-bool gameOver(const Grid *grid) {
-
-	const Coordinate directions[4] =
-	{
-		(Coordinate){+1,0},
-		(Coordinate){-1,0},
-		(Coordinate){0,+1},
-		(Coordinate){0,-1},
-	};
-
-	Grid copy = *grid;
-
-	for (size_t k = 0; k < 4; k++) {
-		for (size_t i = 0; i < copy.rows; i++) {
-			for (size_t j = 0; j < copy.columns; j++) {
-
-				const Coordinate coordinate = {i,j};
-				const Coordinate neighbour = {i + directions[k].row,j + directions[k].col };
-
-				if (!gridIsValidCoordinate(&copy, neighbour) ||
-					gridIsEmptyBox(&copy, neighbour) ||
-					gridIsEmptyBox(&copy, coordinate)) {
-					continue;
-				}
-
-				gridSwapBoxes(&copy, neighbour, coordinate);
-				const Sequence sequence = getLongestSequences(&copy);
-				gridSwapBoxes(&copy, neighbour, coordinate);
-
-				if (sequence.length != 0) {
-					return false;
-				}
-			}
-		}
-	}
-	return true;
-}
-
-
-
-Coordinate getInputCoord(const char* msg) {
-	char coordInput[3];
-	Coordinate coord= {};
-
-	do {
-		printf("%s", msg);
-		scanf("%2s", coordInput);
-		fflush(stdin);
-
-	}
-	while (strToCoord(coordInput, &coord) != SUCCESS);
-
-	return coord;
-}
-
-bool isNeighbour(const Coordinate coord, const Coordinate neighbour) {
-	const bool neighbourLeft = coord.row - 1 == neighbour.row && coord.col == neighbour.col;
-	const bool neighbourRight = coord.row + 1 == neighbour.row && coord.col == neighbour.col;
-	const bool neighbourTop = coord.row == neighbour.row && coord.col - 1 == neighbour.col;
-	const bool neighbourBottom = coord.row == neighbour.row && coord.col + 1 == neighbour.col;
-
-	return neighbourLeft || neighbourRight || neighbourTop || neighbourBottom;
-}
 size_t puzzleGame(Grid *grid) {
 
 	size_t playerScore = 0;
 
 
-	gridPrint(grid);
+	gridPrint(grid, playerScore);
 
 	gridFill(grid);
-	gridPrint(grid);
+	gridPrint(grid, playerScore);
 
 	bool running = true;
 	while (running) {
 
-		playerScore += updateBoxes(grid);
+		gridUpdateBoxes(grid, &playerScore);
 
-		if (gameOver(grid)) {
+		if (gameOver(*grid)) {
 			running = false;
+			continue;
 		}
 
 		//ask for swap
@@ -184,62 +96,16 @@ size_t puzzleGame(Grid *grid) {
 		Coordinate coord1 = {};
 		Coordinate coord2 = {};
 
-		bool looping = true;
-		while (looping)
-		{
-			coord1 = getInputCoord("Case 1: ");
-
-			if (!gridIsValidCoordinate(grid, coord1)) {
-				printf("Coordonnées invalides.\n");
-				continue;
-			}
-			if (gridIsEmptyBox(grid, coord1)) {
-				printf("Choisissez une case non-vide.\n");
-				continue;
-			}
-
-			looping = false;
-		}
-
-		looping = true;
-		while (looping)
-		{
-			/* todo si le swap des deux coords ne donne pas une chaine, l'interdire*/
-			coord2 = getInputCoord("Case 2: ");
-
-			if (!gridIsValidCoordinate(grid, coord2)) {
-				printf("Coordonnées invalides.\n");
-				continue;
-			}
-
-			if (gridIsEmptyBox(grid, coord2)) {
-				printf("Choisissez une case non-vide.\n");
-				continue;
-			}
-
-			if (!isNeighbour(coord1, coord2)) {
-				printf("Choisissez une case adjacente a la premiere.\n");
-				continue;
-			}
-
-			gridSwapBoxes(grid, coord1, coord2);
-			const Sequence sequence = getLongestSequences(grid);
-			gridSwapBoxes(grid, coord1, coord2);
-
-			if (sequence.length == 0) {
-				printf("Permutation non valide.\n");
-				continue; //go to coord1
-			}
-
-			looping = false;
-
-		}
+		do {
+			secureGetCase1(grid, &coord1);
+		}while (!secureGetCase2(*grid, coord1, &coord2));
 
 		gridSwapBoxes(grid, coord1, coord2);
 
-		gridPrint(grid);
+		gridPrint(grid, playerScore);
 
 	}
+	printf("\nGame over.\n");
 	return playerScore;
 }
 
@@ -249,15 +115,13 @@ int main(void) {
 	//
 	// startMenu();
 	//
-	Grid grid = {12, 6, {}};
+	Grid grid = {5, 5, {}};
 	for (int i = 0; i < grid.rows; ++i)
 		memset(grid.data[i], ' ', grid.columns * sizeof(char));
 
 
 	const size_t scorePlayer = puzzleGame(&grid);
-
-	printf("\n\nscore: %llu", scorePlayer);
-
+	(void)scorePlayer;
 	getchar();
 	return 42;
 }

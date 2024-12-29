@@ -6,6 +6,7 @@
 #define GRID_H
 
 #include "dataType.h"
+#include "game.h"
 
 //===Prédicats=====================================================================//
 /**
@@ -69,6 +70,17 @@ bool gridIsValidCoordinate(const Grid *grid, const Coordinate coord);
  * @retval		false si coord1 != coord2
  */
 bool coordEquals(const Coordinate coord1, const Coordinate coord2);
+
+/**
+ * @brief		Vérifie si deux cases sont voisines / adjacentes
+ *
+ * @param[in]	coord Coordonnées 1
+ * @param[in]	neighbour Coordonnées 2
+ *
+ * @retval		true Si neighbour est adjacent à coord
+ * @retval		false Si neighbour n'est pas adjacent à coord
+ */
+bool isNeighbour(const Coordinate coord, const Coordinate neighbour);
 //==================================================================================//
 /**
  * @brief		Remplir une grille avec les lettres A, O, X, H de manière aléatoire
@@ -97,9 +109,11 @@ void gridFill(Grid *grid);
 *			 5 │ │ │ │ │ │ │ │ │ │ │
 *			   ┗─┴─┴─┴─┴─┴─┴─┴─┴─┴─┛
 *
+*			 Score: 0
 * @param[in]	grid structure à afficher
+* @param[in]	playerScore score à afficher
 */
-void gridPrint(const Grid *grid);
+void gridPrint(const Grid *grid, const size_t playerScore);
 
 /**
  * @brief		Vide une case à une certaine position dans le tableau
@@ -157,6 +171,8 @@ void gridFallElement(Grid *grid);
  * @param[out]	grid Grille dans laquelle retirer la plus longue séquence
  *
  * @return		Taille de la plus longue séquence >= 4 sinon 0
+ *
+ * @see			getLongestSequences
  */
 size_t removeLongestSequences(Grid *grid);
 
@@ -195,4 +211,24 @@ size_t removeLongestSequences(Grid *grid);
  */
 Sequence getLongestSequences(const Grid *grid);
 
+/**
+ * @brief		Retire la plus longue séquence en calculant le score
+ *
+ * @note		Les paramètres grid et score sont passé par pointeur,
+ *				car ils subiront tous deux des modifications.
+ *
+ * @param[out]	grid Grille dans laquelle retirer la plus longue séquence
+ * @param[out]	score Récupération du score
+ *
+ * @return		Le score lié à la suppression de la séquence
+ * @see			removeLongestSequences
+ */
+size_t gridRemoveSeqWithScore(Grid *grid, size_t *score);
+
+/**
+ * @brief
+ * @param[out] grid
+ * @param[out] score
+ */
+void gridUpdateBoxes(Grid *grid, size_t *score);
 #endif //GRID_H
