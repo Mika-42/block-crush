@@ -7,4 +7,6 @@ add_executable(projet_info main.c
         grid.c
         grid.h
         dataType.h
+        userInput.c
+        userInput.h
 )

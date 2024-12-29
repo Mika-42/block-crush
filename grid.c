@@ -2,32 +2,76 @@
 // Created by Matis on 16/12/2024.
 //
 
-#include "grid.h"
-#include <stdio.h>
+/**
+ * Cet en-tête est nécessaire pour manipuler le terminal windows
+ * NB : l'utilisation de ce fichier retire la portabilité du code
+ *		et le rend fonctionnel uniquement sous le système d'exploitation Windows
+ */
+#include <windows.h>
+
+/**
+ * Cet entête est nécessaire à la génération de nombre aléatoire
+ */
 #include <stdlib.h>
-#include <conio.h>
-#include <string.h>
 
-static bool visitedInit = false;
-static size_t visitedLength = 1;
+/**
+ * Cet entête est nécessaire à l'utilisation des flux d'entrée/sortie
+ * tel que 'printf', 'scanf'
+ */
+#include <stdio.h>
 
-void resetVisited() {
-	visitedInit = false;
-	visitedLength = 1;
+#include "grid.h"
+
+//===Prédicats=====================================================================//
+bool gridIsEmptyBox(const Grid *grid, const Coordinate coord) {
+	return grid->data[coord.row][coord.col] == ' ';
 }
 
+bool gridIsValidCoordinate(const Grid *grid, const Coordinate coord) {
+	return coord.row < grid->rows && coord.col < grid->columns;
+}
+
+bool coordEquals(const Coordinate coord1, const Coordinate coord2) {
+	return coord1.col == coord2.col && coord1.row == coord2.row;
+}
+//==================================================================================//
+
 void gridFill(Grid *grid) {
-	for (size_t i = 0; i < grid->rows; ++i) {
-		for (size_t j = 0; j < grid->columns; ++j) {
-			constexpr char letter[4] = "HOAX";
-			grid->data[i][j] = letter[rand() % 4];
+
+	/**
+	 * Fonctionnement de l'algorithme:
+	 *	La grille d'entrée est suposée vide
+	 *
+	 * 1.	On remplit aléatoirement les espaces vide
+	 *		de la grilles avec les lettres H, O, A, X
+	 *
+	 * 2.	Si une séquence de plus de 4 élément est présente
+	 *			Alors on la suprime puis on retourne à l'étape 1
+	 *		Sinon on quitte la fonction
+	 */
+
+	do {
+
+		for (size_t i = 0; i < grid->rows; ++i) {
+			for (size_t j = 0; j < grid->columns; ++j) {
+
+				constexpr char letter[4] = "HOAX";
+
+				if (gridIsEmptyBox(grid, (Coordinate){i, j})) {
+					grid->data[i][j] = letter[rand() % 4];
+				}
+
+			}
 		}
-	}
+	}while (removeLongestSequences(grid));
 }
 
 void gridPrint(const Grid *grid) {
 
-	getchar();
+	//Attendre 700ms
+	Sleep(700);
+
+	//Effacer la console
 	system("cls");
 
 	printf("    ");
@@ -72,198 +116,74 @@ void gridPrint(const Grid *grid) {
 }
 
 ErrorCode gridEmptyBox(Grid *grid, const Coordinate coord) {
-	if (coord.row >= grid->rows || coord.col >= grid->columns) {
-		return GRID_SIZE_ERROR;
-	}
+	if (!gridIsValidCoordinate(grid, coord)) return GRID_SIZE_ERROR;
 	grid->data[coord.row][coord.col] = ' ';
 	return SUCCESS;
 }
 
+ErrorCode gridSwapBoxes(Grid *grid, const Coordinate coord1, const Coordinate coord2) {
+
+	if (!gridIsValidCoordinate(grid, coord1) || !gridIsValidCoordinate(grid, coord2)) {
+		return GRID_SIZE_ERROR;
+	}
+
+	/**
+	 * Cette méthode d'échange de deux variables avec XOR fonctionne
+	 * car 'char' est un type numérique 8-bits signé. avec des type de données
+	 * plus complexe (structures, chaines de caractère, etc...) il faudra
+	 * utiliser une variable temporaire
+	 *
+	 * Exemple:
+	 *		On prend a = 5 (0101) et b = 3 (0011)
+	 *
+	 *		Étape 1 : a = a XOR b
+	 *		a = 0101
+	 *		b = 0011
+	 *		-----------
+	 *		a = 0110
+	 *
+	 *		Étape 2 : b = a XOR b
+	 *		a = 0110
+	 *		b = 0011
+	 *		-----------
+	 *      b = 0101  (5 en décimal, qui est l'ancienne valeur de a)
+	 *
+	 *		Étape 3 : a = a XOR b
+	 *		a = 0110
+	 *		b = 0101
+	 *		-----------
+	 *		a = 0011  (3 en décimal, qui est l'ancienne valeur de b)
+	 */
+	grid->data[coord1.row][coord1.col] ^= grid->data[coord2.row][coord2.col];
+	grid->data[coord2.row][coord2.col] ^= grid->data[coord1.row][coord1.col];
+	grid->data[coord1.row][coord1.col] ^= grid->data[coord2.row][coord2.col];
+
+	return SUCCESS;
+}
+
 void gridFallElement(Grid *grid) {
-	// on itère jusqu'à la (n-1) ligne du tableau pour gérer le pire cas possible
-	// qui est un élément tout en haut et toute la colonne en dessous est vide
-	for (size_t _ = 0; _ < grid->rows - 1; ++_) {
-		// on s'arrête une ligne avant pour ne pas chercher
-		// le voisin du dessous de la dernière ligne
+	/**
+	 * on itère jusqu'à la (n-1) ligne du tableau
+	 *		ce qui représente le pire cas possible:
+	 *
+	 *		 - un élément en haut et toute la colonne en dessous est vide
+	 *
+	 */
+	for (size_t _ = 1; _ < grid->rows; ++_) {
+
 		for (size_t i = 0; i < grid->rows - 1; ++i) {
 			for (size_t j = 0; j < grid->columns; ++j) {
-				// si la case actuelle n'est pas vide, mais la case en dessous l'est alors, on permute les deux cases
+
 				const Coordinate coordCurrent = {i, j};
 				const Coordinate coordUnder = {i + 1, j};
 
-				if (!isEmptyBox(grid, coordCurrent) && isEmptyBox(grid, coordUnder)) {
-					swapBoxes(grid, coordCurrent, coordUnder);
+				if (!gridIsEmptyBox(grid, coordCurrent) && gridIsEmptyBox(grid, coordUnder)) {
+					gridSwapBoxes(grid, coordCurrent, coordUnder);
 				}
 			}
 		}
 	}
 }
-
-bool isEmptyBox(const Grid *grid, const Coordinate coord) {
-	return grid->data[coord.row][coord.col] == ' ';
-}
-
-ErrorCode swapBoxes(Grid *grid, const Coordinate coord1, const Coordinate coord2) {
-	if (coord1.row >= grid->rows || coord1.col >= grid->columns) {
-		return GRID_SIZE_ERROR;
-	}
-	if (coord2.row >= grid->rows || coord2.col >= grid->columns) {
-		return GRID_SIZE_ERROR;
-	}
-
-	const char temp = grid->data[coord1.row][coord1.col];
-	grid->data[coord1.row][coord1.col] = grid->data[coord2.row][coord2.col];
-	grid->data[coord2.row][coord2.col] = temp;
-
-	//resetVisited();
-
-	return SUCCESS;
-}
-
-bool gridIsValidCoordinate(const Grid *grid, const Coordinate coord) {
-	return coord.row < grid->rows && coord.col < grid->columns && coord.row >= 0 && coord.col >= 0;
-}
-
-bool isSubDataOf(const Coordinate *array, const size_t size, const Coordinate coord) {
-	for (size_t i = 0; i < size; ++i) {
-		if (coordEquals(array[i], coord)) {
-			return true;
-		}
-	}
-	return false;
-}
-
-bool isSameSymbol(const Grid *grid, const Coordinate coord1, const Coordinate coord2) {
-	if (!gridIsValidCoordinate(grid, coord1)) {
-		return false;
-	}
-
-	if (!gridIsValidCoordinate(grid, coord2)) {
-		return false;
-	}
-
-	return grid->data[coord1.row][coord1.col] == grid->data[coord2.row][coord2.col];
-}
-
-// void findSequence(const Grid *grid, const Coordinate startCoord, Sequence *sequence) {
-// 	// déclaré static pour qu'il conserve sa valeur durant les appels récursifs
-// 	static size_t seqLen = 0;
-//
-// 	const Coordinate coordRight = {startCoord.row, startCoord.col + 1};
-// 	const Coordinate coordLeft = {startCoord.row, startCoord.col - 1};
-// 	const Coordinate coordBottom = {startCoord.row + 1, startCoord.col};
-// 	const Coordinate coordTop = {startCoord.row - 1, startCoord.col};
-//
-// 	const bool isNeighbourRight = isSameSymbol(grid, startCoord, coordRight);
-// 	const bool isNeighbourLeft = isSameSymbol(grid, startCoord, coordLeft);
-// 	const bool isNeighbourBottom = isSameSymbol(grid, startCoord, coordBottom);
-// 	const bool isNeighbourTop = isSameSymbol(grid, startCoord, coordTop);
-// 	/**
-// 	 * On initialise le tableau des coordonnées visitées avec les valeurs maximales des entiers long non signés
-// 	 * afin d'éviter d'avoir des coordonnées aléatoires déjà présentes en mémoire dans le tableau.
-// 	 *
-// 	 * - 'visitedInit', 'visitedLength', 'visited[]' sont déclarés 'static' pour qu'ils ne soient pas initialisé à chaque appel
-// 	 * de la fonction mais uniquement au premier.
-// 	 * Après quoi on met 'visitedInit' à true pour que les instructions qui suivent ne s'exécutent qu'une seule fois
-// 	 */
-//
-// 	static Coordinate visited[longestSequencePossible] = {};
-//
-// 	if (!visitedInit) {
-// 		visitedInit = true;
-// 		for (size_t i = 0; i < longestSequencePossible; ++i) {
-// 			visited[i] = (Coordinate){INT_MAX, INT_MAX};
-// 		}
-// 	}
-//
-// 	/**
-// 	 * A L G O R I T H M E
-// 	 *
-// 	 * 1. coordonées non visité ?
-// 	 *		Oui -> ajouter à la séquence
-// 	 *
-// 	 * 2. un voisin à droite qui n'as pas été visité ?
-// 	 *		Oui -> ajouter à la séquence retourner à l'étape 1 avec les coordonées du voisin de droite
-// 	 *
-// 	 * 3. un voisin à gauche qui n'as pas été visité ?
-// 	 *		Oui -> ajouter à la séquence retourner à l'étape 1 avec les coordonées du voisin de gauche
-// 	 *
-// 	 * 4. un voisin en bas qui n'as pas été visité ?
-// 	 *		Oui -> ajouter à la séquence retourner à l'étape 1 avec les coordonées du voisin du bas
-// 	 */
-// 	if (!isSubDataOf(visited, longestSequencePossible, startCoord)) {
-// 		visited[visitedLength++ - 1] = sequence->data[++seqLen - 1] = startCoord;
-// 	}
-//
-// 	if (isNeighbourRight && !isSubDataOf(visited, longestSequencePossible, coordRight)) {
-// 		visited[visitedLength++ - 1] = sequence->data[seqLen++] = coordRight;
-// 		return findSequence(grid, coordRight, sequence);
-// 	}
-//
-// 	if (isNeighbourLeft && !isSubDataOf(visited, longestSequencePossible, coordLeft)) {
-// 		visited[visitedLength++ - 1] = sequence->data[seqLen++] = coordLeft;
-// 		return findSequence(grid, coordLeft, sequence);
-// 	}
-//
-// 	if (isNeighbourBottom && !isSubDataOf(visited, longestSequencePossible, coordBottom)) {
-// 		visited[visitedLength++ - 1] = sequence->data[seqLen++] = coordBottom;
-// 		return findSequence(grid, coordBottom, sequence);
-// 	}
-//
-// 	if (isNeighbourTop && !isSubDataOf(visited, longestSequencePossible, coordTop)) {
-// 		visited[visitedLength++ - 1] = sequence->data[seqLen++] = coordTop;
-// 		return findSequence(grid, coordTop, sequence);
-// 	}
-//
-// 	if (visitedLength >= longestSequencePossible) {
-// 		visitedLength = longestSequencePossible - 1;
-// 	}
-//
-// 	sequence->length = seqLen >= longestSequencePossible ? longestSequencePossible - 1 : seqLen;
-//
-// 	seqLen = 0;
-// }
-//
-// void getAllSequences(const Grid *grid, const char letter, SequenceArray *sequences) {
-// 	sequences->length = 0;
-//
-// 	for (size_t i = 0; i < grid->rows; i++) {
-// 		for (size_t j = 0; j < grid->columns; j++) {
-// 			const Coordinate coordinate = {i, j};
-//
-// 			if (grid->data[coordinate.row][coordinate.col] != letter) {
-// 				continue;
-// 			}
-//
-// 			findSequence(grid, coordinate, &sequences->data[sequences->length]);
-//
-// 			if (sequences->data[sequences->length].length < 1) {
-// 				continue;
-// 			}
-//
-// 			sequences->length++;
-// 		}
-// 	}
-// 	resetVisited();
-// }
-
-bool coordEquals(const Coordinate coord1, const Coordinate coord2) {
-	return coord1.col == coord2.col && coord1.row == coord2.row;
-}
-
-// void getLongest(const SequenceArray *sequences, size_t *length, size_t *index) {
-// 	size_t len = 0;
-//
-// 	for (int i = 0; i < sequences->length; i++) {
-// 		if (sequences->data[i].length > len) {
-// 			len = sequences->data[i].length;
-// 			*index = i;
-// 		}
-// 	}
-// 	*length = len;
-// }
-
-Sequence getLongestSequences(const Grid *grid);
 
 size_t removeLongestSequences(Grid *grid) {
 
@@ -272,6 +192,11 @@ size_t removeLongestSequences(Grid *grid) {
 	if (sequence.empty) { return 0; }
 
 	for (int i = 0; i < sequence.length; ++i) {
+		/**
+		 * Ici on ne vérifira pas les codes d'erreur
+		 * car pour figurer dans une séquence les coordonées
+		 * sont obligatoirement dans la grille
+		 */
 		gridEmptyBox(grid, sequence.data[i]);
 	}
 
@@ -287,47 +212,55 @@ Sequence getLongestSequences(const Grid *grid) {
 		(Coordinate){0, 1}   // Droite
 	};
 
-	int visited[maxSequencePossible][longestSequencePossible] = {};
+	int visited[maxRow][maxCol] = {};
 
-	Sequence sequence = {};
-	sequence.length = 0;
+	Sequence sequence = {.length = 0};
 
 	for (int i = 0; i < grid->rows; i++) {
 		for (int j = 0; j < grid->columns; j++) {
+
+			// Vérifier si la case a déjà été visité ou si elle est vide
 			if (visited[i][j] || grid->data[i][j] == ' ') continue;
 
-			// Commencer une nouvelle séquence
-			Sequence seq = {};
-			seq.length = 0;
+			// Créer une nouvelle séquence temporaire
+			Sequence seq = {.length = 0};
 
-			// Utiliser une pile pour le DFS
+			// Utiliser une pile pour le DFS (Depth-first search)
 			Coordinate stack[longestSequencePossible];
 			int stack_size = 0;
 
+			// Empiler (i, j)
 			stack[stack_size++] = (Coordinate){i, j};
 
 			while (stack_size > 0) {
 				const Coordinate current = stack[--stack_size];
 				if (visited[current.row][current.col]) continue;
 
+				// Marquer les coordonnées actuelles comme visité
 				visited[current.row][current.col] = 1;
+
+				// Ajouter les coordonnées actuelles à la séquence temporaire
 				seq.data[seq.length++] = current;
 
 				// Vérifier les voisins
 				for (int d = 0; d < 4; d++) {
-					const int x = current.row + directions[d].row;
-					const int y = current.col + directions[d].col;
+
+					const size_t x = current.row + directions[d].row;
+					const size_t y = current.col + directions[d].col;
+
 					const bool validCoordinate = gridIsValidCoordinate(grid, (Coordinate){x, y});
 					const bool sameLetter = grid->data[x][y] == grid->data[i][j];
 
 					if (validCoordinate && !visited[x][y] && sameLetter) {
+
+						// Empiler (x, y)
 						stack[stack_size++] = (Coordinate){x, y};
 					}
 				}
 			}
 
 			// Vérifier si la séquence trouvée est la plus longue
-			if ((sequence.empty = seq.length >= 4 && seq.length > sequence.length)) {
+			if ((sequence.empty = (seq.length >= 4 && seq.length > sequence.length))) {
 				sequence = seq;
 			}
 		}
