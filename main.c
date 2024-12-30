@@ -9,6 +9,7 @@
 int main(void) {
 	char username[20];
 
+	// TODO
 	SetConsoleOutputCP(CP_UTF8);
 	srand(42); //time(nullptr)
 

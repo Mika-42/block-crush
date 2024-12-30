@@ -108,7 +108,26 @@ void printBestScore() {
 
 }
 
+//===========================================================================//
+
+// Fonction de comparaison pour trier en ordre décroissant
+/**
+ * lhs => left hand side
+ * rhs => right hand side
+ */
+int compare(const void* lhs, const void* rhs) {
+	const auto a = (UserScore*)lhs;
+	const auto b = (UserScore*)rhs;
+	return b->score - a->score; // Inverser l'ordre pour décroissant
+}
+
+void sortPlayerScore() {
+	//trier la liste par score décroissant
+	qsort(getUserScore(), MaxPlayers, sizeof(UserScore), compare);
+}
+
 void bestScoreMenu() {
+	// Demander un chiffre en 1 et 3
 	const int scoreInput  = readIntInRange(1, 3, true, ">>> Selection: ", printBestScore);
 
 	if(scoreInput == 1) {
@@ -127,11 +146,18 @@ void askUserScoresByGridSize() {
 		   "┃               RECHERCHER PAR TAILLE DE GRILLE                ┃\n"
 		   "┖──────────────────────────────────────────────────────────────┚\n");
 
+	// Demander le nombre de colonnes de la grille
 	const size_t col = readIntInRange(8, 12, true, ">>> colonnes: ", nullptr);
+
+	// Demander le nombre de lignes de la grille
 	const size_t row = readIntInRange(4, 6, true, ">>> lignes: ", nullptr);
 
 	bool find = false;
+	sortPlayerScore();
+
 	for (int i = 0; i < MaxPlayers; ++i) {
+
+		// Vérifier si les dimensions correspondent à une grille précédemment jouée.
 		if (getUserScore()[i].gridCol == col && getUserScore()[i].gridRow == row)
 		{
 			printf("score de %s: %u\n", getUserScore()[i].username, getUserScore()[i].score);
@@ -155,10 +181,14 @@ void askUserScoresByNameMenu() {
 	       "┃               RECHERCHER PAR NOM D'UTILISATEUR               ┃\n"
 	       "┖──────────────────────────────────────────────────────────────┚\n");
 
+	// Demander un nom d'utilisateur
 	printf(">>> ");
 	char username[20];
+
+	// On spécifie que l'on souhaite récupérer 20 caractères
 	scanf("%20s", username);
 
+	// Vider le tampon d'entrée
 	while (getchar() != '\n'){}
 
 	const int usrIndex = userExist(username);
@@ -182,23 +212,26 @@ void askUsername(char* username) {
 		   "┖──────────────────────────────────────────────────────────────┚\n");
 
 	printf(">>> ");
+	// On spécifie que l'on souhaite récupérer 20 caractères
 	scanf("%20s", username);
 }
-//===========================================================================//
 
 int startMenu(const char* username) {
-	// TODO WRITE SCORE TO FILE
+	// TODO Call rush Game
 
+	// Demander un chiffre entre 1 et 4
 	const int input = readIntInRange(1, 4, true, ">>> Selection: ", printMainMenu);
 
 	if (input == 1) {
 		const GameMode mode = newGameMenu();
 
 		if (mode != NONE) {
-			// commencer une partie
+			// Commencer une partie
 
+			// Créer la grille
 			Grid grid = gridMenu();
 
+			// Récupération du score et des dimensions de la grille
 			UserScore score = {
 				.username = "",
 				.score = mode == PUZZLE ? puzzleGame(&grid) : 0 /*rushGame*/,
@@ -206,9 +239,10 @@ int startMenu(const char* username) {
 				.gridRow = grid.rows,
 			};
 
+			// copie du nom d'utilisateur dans la structure
 			strcpy(score.username, username);
 
-			// write score to file
+			// Écrire le score dans le fichier
 			setUserScore(score);
 			writeScore();
 
@@ -217,8 +251,10 @@ int startMenu(const char* username) {
 		}
 	}
 
-	if (input == 2) bestScoreMenu();
-
+	// Afficher le menu des scores
+	if (input == 2) {
+		bestScoreMenu();
+	}
 
 	// Afficher les règles
 	if (input == 3) {
@@ -234,6 +270,7 @@ int startMenu(const char* username) {
 }
 
 GameMode newGameMenu() {
+	// Saisir un chiffre entre 1 et 3
 	const int input = readIntInRange(1, 3, true, ">>> Selection: ", printNewGameMenu);
 
 	if (input == 1) return PUZZLE;
@@ -243,7 +280,11 @@ GameMode newGameMenu() {
 }
 
 Grid gridMenu() {
+
+	// Demander un chiffre en 8 et 12
 	const int col = readIntInRange(8, 12, true, ">>> colonnes: ", printGridMenu);
+	// Demander un chiffre entre 4 et 6
 	const int row = readIntInRange(4, 6, true, ">>> lignes: ", printGridMenu);
+
 	return (Grid){col, row};
 }

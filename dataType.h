@@ -30,7 +30,11 @@
  *			n'est pas le comportement souhaité dans ce cas
  */
 
-// todo comment
+/**
+ * @var		constexpr size_t MaxPlayers
+ *
+ * @brief	Constante globale indiquant le nombre maximal de joueurs
+ */
 constexpr size_t MaxPlayers = 256;
 
 /**
@@ -190,7 +194,21 @@ typedef enum {
 	NONE,	/**< Aucun mode sélectionné */
 } GameMode;
 
-//todo comment
+/**
+ * @brief	Représente le score d'un joueur
+ *
+ * @note	'__attribute__((__packed__))' assure que les données sont contigus
+ *			en mémoire afin de récupérer des chunks de données.
+ *
+ *			Dans la mémoire la structure aura cette forme :
+ *
+ *		       1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  19  20
+ *		     ┌───────────────────────────────────────────────────────────────────────────────┐
+ *		     │                                    username                                   │
+ *		     ├───────────────┬───────────────────────────────┬───────────────────────────────┤
+ *			 │     score     │             gridCol           │            gridRow            │
+ *		     └───────────────┴───────────────────────────────┴───────────────────────────────┘
+ */
 typedef struct __attribute__((__packed__)) {
 	char username[20];	// 160 bits = 20 bytes
 	unsigned int score; //  32 bits =  4 bytes

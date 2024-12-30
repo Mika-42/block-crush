@@ -6,15 +6,10 @@
 #define GRID_H
 
 #include "dataType.h"
-#include "game.h"
 
 //===Prédicats=====================================================================//
 /**
  * @brief		Vérifie si la case [x][y] est vide
- *
- * @note		- Le mot clé 'inline' permet d'optimiser la fonction,
- *				au lieu qu'elle soit appelée sur la pile le compilateur
- *				la remplacera par son expression booléenne.
  *
  * @note		- coord est passé par valeur constante
  *				afin de garantir l'immutabilité des données d'entrées
@@ -34,9 +29,6 @@ bool gridIsEmptyBox(const Grid *grid, const Coordinate coord);
 /**
  * @brief		Vérifier si les coordonnées sont dans la grille
  *
- * @note		- Le mot clé 'inline' permet d'optimiser la fonction,
- *				au lieu qu'elle soit appelée sur la pile le compilateur
- *				la remplacera par son expression booléenne.
  *
  * @note		- coord est passé par valeur constante
  *				afin de garantir l'immutabilité des données d'entrées
@@ -56,9 +48,6 @@ bool gridIsValidCoordinate(const Grid *grid, const Coordinate coord);
 /**
  * @brief		Vérifier si les coordonnées sont égales
  *
- * @note		- Le mot clé 'inline' permet d'optimiser la fonction,
- *				au lieu qu'elle soit appelée sur la pile le compilateur
- *				la remplacera par son expression booléenne.
  *
  * @note		- coord1 et coord2 sont passé par valeur constante
  *				afin de garantir l'immutabilité des données d'entrées
