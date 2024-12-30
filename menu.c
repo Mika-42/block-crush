@@ -10,6 +10,15 @@
 #include "game.h"
 #include "userInput.h"
 
+bool contain(const char* str, const char c) {
+	for (int i = 0; str[i] != '\0'; i++) {
+		if (str[i] == c) {
+			return true;
+		}
+	}
+	return false;
+}
+
 //===Print menu==============================================================//
 
 void printMainMenu() {
@@ -36,7 +45,6 @@ void printNewGameMenu() {
 }
 
 void printRules() {
-	// TODO COMPLETER LES REGLES DU JEU
 	system("cls");
 	printf("┎──────────────────────────────────────────────────────────────┒\n"
 	       "┃                        REGLES DU JEU                         ┃\n"
@@ -94,6 +102,16 @@ void printGameOver() {
 		   "┖──────────────────────────────────────────────────────────────┚\n");
 }
 
+void askUsername(char* username) {
+	printf("┎──────────────────────────────────────────────────────────────┒\n"
+		   "┃                     NOM DE L'UTILISATEUR                     ┃\n"
+		   "┖──────────────────────────────────────────────────────────────┚\n");
+
+	do {
+		printf(">>> ");
+		scanf("%50s", username);
+	} while (contain(username, ';'));
+}
 //===========================================================================//
 
 int startMenu() {
@@ -118,6 +136,7 @@ int startMenu() {
 
 	if (input == 2) {
 		printf("Voir les meilleurs scores\n");
+		//read from file
 	}
 
 	// Afficher les règles

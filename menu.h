@@ -33,12 +33,22 @@ void printGridMenu();
  */
 void printGameOver();
 
+/**
+ *
+ * @param username
+ *
+ * @warning 'username' doit être un tableau de char de taille 50
+ */
+void askUsername(char* username);
 //===========================================================================//
 
+// todo add description
 int startMenu();
 
+// todo add description
 GameMode newGameMenu();
 
+// todo add description
 Grid gridMenu();
 
 #endif //MENU_H

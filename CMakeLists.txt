@@ -13,4 +13,6 @@ add_executable(projet_info main.c
         game.h
         menu.c
         menu.h
+        score.c
+        score.h
 )
