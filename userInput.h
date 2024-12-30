@@ -8,36 +8,6 @@
 #include "dataType.h"
 
 /**
- * @brief		Déterminer si un caractère est une lettre est majuscule
- *
- * @param[in]	letter Caractère à vérifier
- *
- * @retval		true Si le caractère est une lettre majuscule
- * @retval		false Si le caractère n'est pas une lettre majuscule
- */
-bool isUpperCaseLetter(const char letter);
-
-/**
- * @brief		Déterminer si un caractère est une lettre est minuscule
- *
- * @param[in]	letter Caractère à vérifier
- *
- * @retval		true Si le caractère est une lettre minuscule
- * @retval		false Si le caractère n'est pas une lettre minuscule
- */
-bool isLowerCaseLetter(const char letter);
-
-/**
- * @brief		Déterminer si un caractère est un chiffre
- *
- * @param[in]	letter Caractère à vérifier
- *
- * @retval		true Si le caractère est un chiffre
- * @retval		false Si le caractère n'est pas un chiffre
- */
-bool isNumber(const char letter);
-
-/**
  * @brief 		Convertir une entrée utilisateur sous forme de coordonnées
  *
  *				Exemple :

@@ -77,8 +77,8 @@ void gridFill(Grid *grid) {
 
 void gridPrint(const Grid *grid,  const size_t playerScore) {
 
-	//Attendre 50ms
-	Sleep(50);
+	//Attendre 70ms
+	Sleep(70);
 
 	//Effacer la console
 	system("cls");
@@ -122,7 +122,12 @@ void gridPrint(const Grid *grid,  const size_t playerScore) {
 		printf("┴─");
 	}
 	printf("┛\n");
-	printf("\tScore: %llu\n\n", playerScore);
+
+	// Affichage du score avec 4 digits
+	printf("┎──────────────────────────────────────────────────────────────┒\n");
+	printf("┃                         SCORE : %04llu                         ┃\n", playerScore);
+	printf("┖──────────────────────────────────────────────────────────────┚\n");
+
 }
 
 ErrorCode gridEmptyBox(Grid *grid, const Coordinate coord) {

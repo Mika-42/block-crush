@@ -2,6 +2,11 @@
 // Created by Matis on 29/12/2024.
 //
 
+/*
+ * Cet en-tête est nécessaire à l'utilisation des prédicats
+ * 'islower', 'isupper', 'isdigit'
+ */
+#include <ctype.h>
 /**
  * Cet en-tête est nécessaire à l'utilisation des entrées/sorties
  * 'printf', 'scanf'
@@ -11,25 +16,12 @@
 #include "userInput.h"
 #include "grid.h"
 
-
-bool isUpperCaseLetter(const char letter) {
-	return letter >= 'A' && letter <= 'Z';
-}
-
-bool isLowerCaseLetter(const char letter) {
-	return letter >= 'a' && letter <= 'z';
-}
-
-bool isNumber(const char letter) {
-	return letter >= '0' && letter <= '9';
-}
-
 ErrorCode strToCoord(const char in_coord[2], Coordinate *coordinate) {
 
-	const bool isAlphaNum = isUpperCaseLetter(in_coord[0]) && isNumber(in_coord[1]);
-	const bool isNumAlpha = isUpperCaseLetter(in_coord[1]) && isNumber(in_coord[0]);
-	const bool is_alphaNum = isLowerCaseLetter(in_coord[0]) && isNumber(in_coord[1]);
-	const bool isNum_alpha = isLowerCaseLetter(in_coord[1]) && isNumber(in_coord[0]);
+	const bool isAlphaNum = isupper(in_coord[0]) && isdigit(in_coord[1]);
+	const bool isNumAlpha = isupper(in_coord[1]) && isdigit(in_coord[0]);
+	const bool is_alphaNum = islower(in_coord[0]) && isdigit(in_coord[1]);
+	const bool isNum_alpha = islower(in_coord[1]) && isdigit(in_coord[0]);
 
 	if (isAlphaNum) {
 		coordinate->row = in_coord[1] - '0' - 1;
@@ -59,6 +51,7 @@ ErrorCode strToCoord(const char in_coord[2], Coordinate *coordinate) {
 }
 
 Coordinate getInputCoord(const char* msg) {
+	//todo improve
 
 	// variable temporaire pour récupérer la saisie
 	// 3 = 2 char + '\0'

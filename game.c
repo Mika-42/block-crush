@@ -112,6 +112,9 @@ size_t puzzleGame(Grid *grid) {
 
 	}
 
-	printf("\nGame over.\n");
+	printf("\n┎──────────────────────────────────────────────────────────────┒\n");
+	  printf("┃                          GAME OVER                           ┃\n");
+	  printf("┖──────────────────────────────────────────────────────────────┚\n");
+
 	return playerScore;
 }
