@@ -161,8 +161,8 @@ typedef struct {
  * @brief	Représente la grille de jeu
  */
 typedef struct {
-	size_t columns;				/**< Nombre de colonnes dans la grille. */
-	size_t rows;				/**< Nombre de lignes dans la grille. */
+	const size_t columns;				/**< Nombre de colonnes dans la grille. */
+	const size_t rows;				/**< Nombre de lignes dans la grille. */
 	char data[maxRow][maxCol];	/**< Matrice pour stocker les données de la grille. */
 } Grid;
 
@@ -177,5 +177,14 @@ typedef enum : size_t {
 	GENERIC_ERROR,		/**< Erreur générique à renvoyer dans un cas quelconque. */
 	GRID_SIZE_ERROR,	/**< Erreur liée aux dimensions de la grille */
 } ErrorCode;
+
+/**
+ * @brief	Enumération représentant le mode de jeu
+ */
+typedef enum {
+	PUZZLE, /**< Mode puzzle */
+	RUSH,	/**< Mode rush */
+	NONE,	/**< Aucun mode sélectionné */
+} GameMode;
 
 #endif //DATATYPE_H

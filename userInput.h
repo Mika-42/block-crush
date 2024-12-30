@@ -2,6 +2,10 @@
 // Created by Matis on 29/12/2024.
 //
 
+/**
+ * @todo revérifier les fonction secure get
+ */
+
 #ifndef USERINPUT_H
 #define USERINPUT_H
 
@@ -29,8 +33,10 @@ ErrorCode strToCoord(const char in_coord[2], Coordinate *coordinate);
  * @param[in]	msg Message à afficher avant la saisie utilisateur
  *
  * @return		Coordonnées d'entrée converti en structure
+ *
+ * @see			strToCoord
  */
-Coordinate getInputCoord(const char* msg);
+Coordinate getInputCoord(const char *msg);
 
 /**
  * @brief		Récupération sécurisée de la coordonnée 1
@@ -42,6 +48,8 @@ Coordinate getInputCoord(const char* msg);
  *
  * @param[in]	grid Grille support
  * @param[out]	coord Coordonnées de sortie
+ *
+ * @see			getInputCoord
  */
 void secureGetCase1(const Grid *grid, Coordinate *coord);
 
@@ -58,7 +66,29 @@ void secureGetCase1(const Grid *grid, Coordinate *coord);
  *
  * @retval		true Si la coordonnée 2 est valide par rapport à la coordonnée 1
  * @retval		false Si la coordonnée 2 invalide par rapport à la coordonnée 1
+ *
+ * @see			getInputCoord
  */
 bool secureGetCase2(Grid grid, const Coordinate coord1, Coordinate *coord2);
 
+/**
+ * @brief		Récupère un entier par saisi utilisateur dans un intervalle [min, max]
+ *
+ * @note		Le type 'void (*error_process)(void)' désigne un pointeur
+ *				sur une fonction avec un type de retour 'void' qui prend
+ *				en paramètre un 'void'. Toutes les fonctions dont le prototype
+ *				se présentant sous la forme 'void f(void);' peuvent être passé à
+ *				ce pointeur. Ainsi, on peut appeler une fonction différente selon
+ *				la manière dont on souhaite gérer les erreurs.
+ *
+ * @param[in]	min Valeur minimale
+ * @param[in]	max Valeur maximale
+ * @param[in]	display_error Indique si le message d'erreur doit être affichée
+ * @param[in]	error_msg Message d'erreur à afficher
+ * @param[in]	error_process Fonction à appeler en cas d'erreur
+ *
+ * @return		Renvoie la valeur numérique saisie par l'utilisateur
+ */
+int readIntInRange(int min, int max, const bool display_error, const char *error_msg,
+                    void (*error_process)(void));
 #endif //USERINPUT_H

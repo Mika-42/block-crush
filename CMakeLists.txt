@@ -11,4 +11,6 @@ add_executable(projet_info main.c
         userInput.h
         game.c
         game.h
+        menu.c
+        menu.h
 )
