@@ -37,13 +37,17 @@ void printGameOver();
  *
  * @param username
  *
- * @warning 'username' doit être un tableau de char de taille 50
+ * @warning 'username' doit être un tableau de char de taille 20
  */
 void askUsername(char* username);
+
+void askUserScoresByGridSize();
+
+void askUserScoresByNameMenu();
 //===========================================================================//
 
 // todo add description
-int startMenu();
+int startMenu(const char* username);
 
 // todo add description
 GameMode newGameMenu();

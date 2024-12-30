@@ -30,6 +30,9 @@
  *			n'est pas le comportement souhaité dans ce cas
  */
 
+// todo comment
+constexpr size_t MaxPlayers = 256;
+
 /**
  * @var		constexpr size_t maxRow
  *
@@ -186,5 +189,13 @@ typedef enum {
 	RUSH,	/**< Mode rush */
 	NONE,	/**< Aucun mode sélectionné */
 } GameMode;
+
+//todo comment
+typedef struct __attribute__((__packed__)) {
+	char username[20];	// 160 bits = 20 bytes
+	unsigned int score; //  32 bits =  4 bytes
+	size_t gridCol;		//  64 bits =  8 bytes
+	size_t gridRow;		//  64 bits =  8 bytes
+} UserScore;
 
 #endif //DATATYPE_H
