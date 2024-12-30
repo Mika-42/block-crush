@@ -6,8 +6,12 @@
 #define SCORE_H
 #include <stddef.h>
 
-const char* FILE_SCORE_NAME = "score.txt";
+#include "dataType.h"
 
-void writeScore(const char* username, size_t score);
-
+int userExist(const char* username);
+void setUserScore(const UserScore usr_score);
+UserScore* getUserScore();
+int newUsernameIndex();
+void writeScore();
+void readUserScore();
 #endif //SCORE_H

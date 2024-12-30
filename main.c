@@ -4,14 +4,16 @@
 #include <time.h>
 
 #include "menu.h"
+#include "score.h"
 
 int main(void) {
+	char username[20];
+
 	SetConsoleOutputCP(CP_UTF8);
 	srand(42); //time(nullptr)
 
-	char username[50];
+	readUserScore();
 	askUsername(username);
 
-
-	return startMenu();
+	return startMenu(username);
 }

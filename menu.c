@@ -6,18 +6,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "game.h"
+#include "score.h"
 #include "userInput.h"
-
-bool contain(const char* str, const char c) {
-	for (int i = 0; str[i] != '\0'; i++) {
-		if (str[i] == c) {
-			return true;
-		}
-	}
-	return false;
-}
 
 //===Print menu==============================================================//
 
@@ -102,19 +95,98 @@ void printGameOver() {
 		   "┖──────────────────────────────────────────────────────────────┚\n");
 }
 
+void printBestScore() {
+	system("cls");
+
+	printf("┎──────────────────────────────────────────────────────────────┒\n"
+		   "┃                      MEILLEURS  SCORES                       ┃\n"
+		   "┠──────────────────────────────────────────────────────────────┨\n"
+		   "┃ [1] Rechercher par utilisateur                               ┃\n"
+		   "┃ [2] Rechercher par taille de grille                          ┃\n"
+		   "┃ [3] Revenir au menu principal                                ┃\n"
+		   "┖──────────────────────────────────────────────────────────────┚\n");
+
+}
+
+void bestScoreMenu() {
+	const int scoreInput  = readIntInRange(1, 3, true, ">>> Selection: ", printBestScore);
+
+	if(scoreInput == 1) {
+		askUserScoresByNameMenu();
+		bestScoreMenu();
+	}
+	if(scoreInput == 2) {
+		askUserScoresByGridSize();
+		bestScoreMenu();
+	}
+}
+
+void askUserScoresByGridSize() {
+	system("cls");
+	printf("┎──────────────────────────────────────────────────────────────┒\n"
+		   "┃               RECHERCHER PAR TAILLE DE GRILLE                ┃\n"
+		   "┖──────────────────────────────────────────────────────────────┚\n");
+
+	const size_t col = readIntInRange(8, 12, true, ">>> colonnes: ", nullptr);
+	const size_t row = readIntInRange(4, 6, true, ">>> lignes: ", nullptr);
+
+	bool find = false;
+	for (int i = 0; i < MaxPlayers; ++i) {
+		if (getUserScore()[i].gridCol == col && getUserScore()[i].gridRow == row)
+		{
+			printf("score de %s: %u\n", getUserScore()[i].username, getUserScore()[i].score);
+			find = true;
+		}
+	}
+
+	if (!find) {
+		printf("Aucune grille correspondante.\n");
+	}
+
+	printf("┎──────────────────────────────────────────────────────────────┒\n"
+		   "┃ [1] Revenir au menu meilleures scores                        ┃\n"
+		   "┖──────────────────────────────────────────────────────────────┚\n");
+	readIntInRange(1, 1, true, ">>> Selection: ", nullptr);
+}
+
+void askUserScoresByNameMenu() {
+	system("cls");
+	printf("┎──────────────────────────────────────────────────────────────┒\n"
+	       "┃               RECHERCHER PAR NOM D'UTILISATEUR               ┃\n"
+	       "┖──────────────────────────────────────────────────────────────┚\n");
+
+	printf(">>> ");
+	char username[20];
+	scanf("%20s", username);
+
+	while (getchar() != '\n'){}
+
+	const int usrIndex = userExist(username);
+
+	if (usrIndex < 0) {
+		printf("Cet utilisateur n'est pas enregistré.\n");
+	}
+	else {
+		printf("score de %s: %u\n", username, getUserScore()[usrIndex].score);
+	}
+
+	printf("┎──────────────────────────────────────────────────────────────┒\n"
+	       "┃ [1] Revenir au menu meilleures scores                        ┃\n"
+	       "┖──────────────────────────────────────────────────────────────┚\n");
+	readIntInRange(1, 1, true, ">>> Selection: ", nullptr);
+}
+
 void askUsername(char* username) {
 	printf("┎──────────────────────────────────────────────────────────────┒\n"
 		   "┃                     NOM DE L'UTILISATEUR                     ┃\n"
 		   "┖──────────────────────────────────────────────────────────────┚\n");
 
-	do {
-		printf(">>> ");
-		scanf("%50s", username);
-	} while (contain(username, ';'));
+	printf(">>> ");
+	scanf("%20s", username);
 }
 //===========================================================================//
 
-int startMenu() {
+int startMenu(const char* username) {
 	// TODO WRITE SCORE TO FILE
 
 	const int input = readIntInRange(1, 4, true, ">>> Selection: ", printMainMenu);
@@ -127,17 +199,26 @@ int startMenu() {
 
 			Grid grid = gridMenu();
 
-			const size_t score = mode == PUZZLE ? puzzleGame(&grid) : 0 /*rushGame*/;
-			// todo write score to file
+			UserScore score = {
+				.username = "",
+				.score = mode == PUZZLE ? puzzleGame(&grid) : 0 /*rushGame*/,
+				.gridCol = grid.columns,
+				.gridRow = grid.rows,
+			};
+
+			strcpy(score.username, username);
+
+			// write score to file
+			setUserScore(score);
+			writeScore();
+
 			printGameOver();
 			readIntInRange(1, 1, true, ">>> Selection: ", nullptr);
 		}
 	}
 
-	if (input == 2) {
-		printf("Voir les meilleurs scores\n");
-		//read from file
-	}
+	if (input == 2) bestScoreMenu();
+
 
 	// Afficher les règles
 	if (input == 3) {
@@ -149,7 +230,7 @@ int startMenu() {
 		return 42;
 	}
 
-	return startMenu();
+	return startMenu(username);
 }
 
 GameMode newGameMenu() {
