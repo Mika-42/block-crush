@@ -13,6 +13,10 @@
  */
 #include <stddef.h>
 
+/**
+ * Cet en-tête permet de connaitre l'extréma d'un type
+ */
+#include <limits.h>
 
 /**
  * @note	Ici, on utilisera le mot clé 'constexpr' qui est une
@@ -36,6 +40,20 @@
  * @brief	Constante globale indiquant le nombre maximal de joueurs
  */
 constexpr size_t MaxPlayers = 256;
+
+/**
+ * @var		constexpr size_t rushModeTimeInterval_s
+ *
+ * @brief	Constante globale indiquant l'intervalle de temps en  seconde du mode Rush
+ */
+constexpr size_t rushModeTimeInterval_s = 15;
+
+/**
+ * @var		constexpr char Letter[4]
+ *
+ * @brief	Constante globale représente les lettres possibles dans la grille
+ */
+constexpr char Letter[4] = "HOAX";
 
 /**
  * @var		constexpr size_t maxRow
@@ -129,8 +147,8 @@ constexpr size_t maxSequencePossible = longestSequencePossible / 2;
  * @brief	Représente des coordonnées 2D
  */
 typedef struct {
-	size_t row; /**< Numéro de ligne */
-	size_t col; /**< Numéro de colonne */
+	 size_t row; /**< Numéro de ligne */
+	 size_t col; /**< Numéro de colonne */
 } Coordinate;
 
 /**

@@ -19,6 +19,8 @@
 
 #include "grid.h"
 
+#include <conio.h>
+
 ErrorCode strToCoord(const char in_coord[2], Coordinate *coordinate) {
 	const bool isAlphaNum = isupper(in_coord[0]) && isdigit(in_coord[1]);
 	const bool isNumAlpha = isupper(in_coord[1]) && isdigit(in_coord[0]);
@@ -61,8 +63,8 @@ Coordinate getInputCoord(const char *msg) {
 		printf("%s", msg);
 
 		// [1] On récupère les deux premiers caractères
-		coordInput[0] = getchar();
-		coordInput[1] = getchar();
+		coordInput[0] = (char)getchar();
+		coordInput[1] = (char)getchar();
 
 		// [2] S'il y a d'autres caractères dans le tampon
 		// On le vide puis on retourne au [1]
@@ -182,4 +184,53 @@ int readIntInRange(int min, int max, const bool display_error, const char *error
 
 		return value;
 	}
+}
+
+bool ValidNonBlockingSecureGet(const Grid * grid, char input[2], Coordinate *coord) {
+	if (strToCoord(&input[0], coord) != SUCCESS) {
+		printf("Coordonnées invalides.\n");
+		return false;
+	}
+
+	if (!gridIsValidCoordinate(grid, *coord)) {
+		printf("Coordonnées invalides.\n");
+		return false;
+	}
+	if (gridIsEmptyBox(grid, *coord)) {
+		printf("Choisissez une case non-vide.\n");
+		return false;
+	}
+	return true;
+}
+
+bool nonBlockingSecureGet(const Grid *grid, char input[2], Coordinate *coord, const char* msg, const bool skip) {
+	static size_t i = 0;
+
+	if (skip) {
+		return false;
+	}
+
+	if (_kbhit()) {
+		input[i % 2] = (char)getch();
+
+
+		if (isupper(input[i % 2]) || islower(input[i % 2]) || isdigit(input[i % 2])) {
+			printf("%c", input[i % 2]);
+			i++;
+		}
+
+		if (i == 2) {
+			printf("\n");
+			const bool validInput1 = ValidNonBlockingSecureGet(grid, input, coord);
+
+			if (!validInput1) {
+				printf(msg);
+				i = 0;
+				return false;
+			}
+			i = 0;
+			return true;
+		}
+	}
+	return false;
 }
