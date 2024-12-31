@@ -65,10 +65,8 @@ void gridFill(Grid *grid) {
 		for (size_t i = 0; i < grid->rows; ++i) {
 			for (size_t j = 0; j < grid->columns; ++j) {
 
-				constexpr char letter[4] = "HOAX";
-
 				if (gridIsEmptyBox(grid, (Coordinate){i, j})) {
-					grid->data[i][j] = letter[rand() % 4];
+					grid->data[i][j] = Letter[rand() % 4];
 				}
 
 			}
@@ -310,4 +308,41 @@ void gridUpdateBoxes(Grid *grid, size_t *score) {
 		gridFallElement(grid);
 		gridPrint(grid, *score);
 	}
+}
+
+ErrorCode gridPushUpInsertBoxes(Grid *grid)
+{
+	// Pour chaque élément de la grille
+	for (size_t i = 0; i < grid->rows; i++) {
+		for (size_t j = 0; j < grid->columns; j++) {
+
+			const Coordinate coord = {i, j};
+			const Coordinate topCoord = {i-1, j};
+
+			const bool invalidCoordinate = !gridIsValidCoordinate(grid, topCoord);
+			const bool boxEmpty = gridIsEmptyBox(grid, coord);
+
+			// Si les coordonnées du voisin supérieur sont hors de la grille
+			// Mais que le voisin d'en dessous est vide alors passer au prochain tour de boucle.
+			if (invalidCoordinate && boxEmpty) {
+				continue;
+			}
+
+			// Si les coordonnées du voisin supérieur sont hors de la grille
+			// Et que le voisin d'en dessous n'est pas vide alors signaler la fin de la partie.
+			if (invalidCoordinate && !boxEmpty) {
+				return GENERIC_ERROR;
+			}
+
+			// Si tout est ok, permuter 2 à 2 les cases
+			gridSwapBoxes(grid, coord, topCoord);
+		}
+	}
+
+	// Remplir la dernière ligne, de caractère aléatoire
+	for (size_t i = 0; i < grid->columns; i++) {
+		grid->data[grid->rows - 1][i] = Letter[rand()%4];
+	}
+
+	return SUCCESS;
 }

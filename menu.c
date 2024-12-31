@@ -217,7 +217,6 @@ void askUsername(char* username) {
 }
 
 int startMenu(const char* username) {
-	// TODO Call rush Game
 
 	// Demander un chiffre entre 1 et 4
 	const int input = readIntInRange(1, 4, true, ">>> Selection: ", printMainMenu);
@@ -234,7 +233,7 @@ int startMenu(const char* username) {
 			// Récupération du score et des dimensions de la grille
 			UserScore score = {
 				.username = "",
-				.score = mode == PUZZLE ? puzzleGame(&grid) : 0 /*rushGame*/,
+				.score = mode == PUZZLE ? puzzleGame(&grid) : rushGame(&grid),
 				.gridCol = grid.columns,
 				.gridRow = grid.rows,
 			};

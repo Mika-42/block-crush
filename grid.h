@@ -226,4 +226,8 @@ size_t gridRemoveSeqWithScore(Grid *grid, size_t *score);
  * @param[out] score Récupération du score
  */
 void gridUpdateBoxes(Grid *grid, size_t *score);
+
+// todo comment
+ErrorCode gridPushUpInsertBoxes(Grid *grid);
+
 #endif //GRID_H

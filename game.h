@@ -42,4 +42,5 @@ size_t evaluateScore(const size_t X, const size_t N);
  */
 size_t puzzleGame(Grid *grid);
 
+size_t rushGame(Grid *grid);
 #endif //GAME_H
