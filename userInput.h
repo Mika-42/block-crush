@@ -91,5 +91,5 @@ int readIntInRange(int min, int max, const bool display_error, const char *error
 // todo comment
 bool ValidNonBlockingSecureGet(const Grid * grid, char input[2], Coordinate *coord);
 
-bool nonBlockingSecureGet(const Grid *grid, char input[2], Coordinate *coord,const char* msg, const bool skip);
+bool nonBlockingSecureGet(const Grid *grid, char input[2], Coordinate *coord,const char* msg);
 #endif //USERINPUT_H

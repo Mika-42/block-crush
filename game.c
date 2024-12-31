@@ -124,72 +124,86 @@ size_t rushGame(Grid *grid) {
 	// Remplir toutes les cases de la grille aléatoirement
 	gridFill(grid);
 
+	// Conserver que les 3 dernières lignes
 	for (int i = 0; i < grid->rows - 3; ++i)
 		memset(grid->data[i], ' ', grid->columns * sizeof(char));
 
 	// Afficher la grille
 	gridPrint(grid, playerScore);
 
+	// On récupère le temps au lancement de la fonction
 	time_t start = time(nullptr);
 
-	bool skip = false, secondIsOK = false;
+	bool firstCoordIsValid = false, secondCoordIsValid = false;
 
-	Coordinate coord1 = {};
-	Coordinate coord2 = {};
+	Coordinate coord1 = {ULLONG_MAX, ULLONG_MAX};
+	Coordinate coord2 = {ULLONG_MAX, ULLONG_MAX};
+
+	char input2[2] = {}; // Buffer pour la case 1
+	char input1[2] = {}; // Buffer pour la case 2
+	memset(input1, 0, 2 * sizeof(char));
+	memset(input2, 0, 2 * sizeof(char));
 
 	printf("Case 1: ");
 	while (true) {
-		char input2[2];
-		char input1[2];
+		// Récupération de la case 1
 
+		// Si la première coordonnée est invalide
+		if (!firstCoordIsValid) {
 
+			// Demander la première coordonnée
+			firstCoordIsValid = nonBlockingSecureGet(grid, input1, &coord1, "Case 1: ");
 
-		if (nonBlockingSecureGet(grid, input1, &coord1, "Case 1: ", skip)) {
-			skip = true;
-			printf("Case 2: ");
+			// Si elle est valide alors demander la deuxième coordonnée
+			if (firstCoordIsValid) {
+				printf("Case 2: ");
+			}
 		}
 
+		// Si la première coordonnée est valide, mais pas la deuxième
+		if (firstCoordIsValid && !secondCoordIsValid) {
 
-		if (skip && nonBlockingSecureGet(grid, input2, &coord2, "Case 2: ", false) && isNeighbour(coord1, coord2)) {
-			secondIsOK = true;
-			skip = false;
-		}
+			// Demander la deuxième coordonnée
+			secondCoordIsValid = nonBlockingSecureGet(grid, input2, &coord2, "Case 2: ");
 
-		// pseudo timer
-		// printf("%d\r", (int)difftime(current, start));
+			// Si la deuxième coordonnée est valide
+			if (secondCoordIsValid) {
 
-		// Si la permutation est valide
-		if (secondIsOK) {
-			secondIsOK = false;
-			// Réinitialiser l'entrée utilisateur
-			memset(input1, 0, 2 * sizeof(char));
-			memset(input2, 0, 2 * sizeof(char));
+				Grid copy = *grid;
+				// On vérifie si la permutation aboutie à une séquence valide
+				gridSwapBoxes(&copy, coord1, coord2);
+				const Sequence sequence = getLongestSequences(&copy);
 
-			gridSwapBoxes(grid, coord1, coord2);
+				// Si le coup n'est pas jouable, on redemande la case 1
+				if (sequence.length == 0) {
+					printf("Permutation non valide.\n");
+				} else {
+					gridSwapBoxes(grid, coord1, coord2);
 
-			// Afficher la grille
-			gridPrint(grid, playerScore);
+					// Afficher la grille
+					gridPrint(grid, playerScore);
 
-			//Actualiser la grille
-			gridUpdateBoxes(grid, &playerScore);
-			// Afficher la grille
-			gridPrint(grid, playerScore);
-			printf("Choisissez deux cases voisines a echanger\n");
-			printf("Case 1: ");
+					//Actualiser la grille
+					gridUpdateBoxes(grid, &playerScore);
+					// Afficher la grille
+					gridPrint(grid, playerScore);
+					printf("Choisissez deux cases voisines a echanger\n");
+				}
+				firstCoordIsValid = secondCoordIsValid = false;
+				printf("Case 1: ");
+			}
 		}
 
 		// Vérifier si 15 secondes se sont écoulées
 		const time_t current = time(nullptr);
 
 		if (difftime(current, start) >= rushModeTimeInterval_s) {
-
-			secondIsOK = false;
+			secondCoordIsValid = false;
 			// Réinitialiser l'entrée utilisateur
 			memset(input1, 0, 2 * sizeof(char));
 			memset(input2, 0, 2 * sizeof(char));
 
 			start = time(nullptr);
-
 
 			// Pousser les éléments de la grille vers le haut et insérer une ligne
 			bool gameover = gridPushUpInsertBoxes(grid) != SUCCESS;
@@ -210,11 +224,7 @@ size_t rushGame(Grid *grid) {
 			printf("Choisissez deux cases voisines a echanger\n");
 			printf("Case 1: ");
 		}
-
-
-
-
 	}
 
-	return 0;
+	return playerScore;
 }

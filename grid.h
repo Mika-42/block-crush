@@ -227,7 +227,14 @@ size_t gridRemoveSeqWithScore(Grid *grid, size_t *score);
  */
 void gridUpdateBoxes(Grid *grid, size_t *score);
 
-// todo comment
+/**
+ * @brief		Pousse les éléments de la grille vers le haut et insère une ligne en bas
+
+ * @param grid	Grille sur laquelle effectuer les changements.
+
+ * @retval		GENERIC_ERROR Est renvoyé si un élément est poussé hors de la grille
+ * @retval		SUCCESS Est renvoyé si le déplacement est effectué correctement
+ */
 ErrorCode gridPushUpInsertBoxes(Grid *grid);
 
 #endif //GRID_H
