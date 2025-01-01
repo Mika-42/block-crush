@@ -190,32 +190,54 @@ bool getKeyboardInput(char *input) {
 
 	// On déclare ces 3 variables 'static' pour qu'elles
 	// ne soient pas réinitialisé à chaque appel de la fonction
+
+	//Signale si une touche a été touchée précédemment
 	static bool hitted = false;
 
-	// l'indice est un booléen, car on utilise la propriété qui définie qu'un booléen revien à 0 lors de l'overflow
+	// L'indice est un booléen, car on souhaite faire osciller l'indice entre 0 et 1.
 	static bool index = 0;
+
+	// Tampon d'entrée qui représente une saisie de 2 caractères
 	static char entry[2];
 
 	// Si une touche du clavier est appuyée
 	if (_kbhit()) {
 
-		//
+		// Récupération du caractère associé à la touche
 		entry[index] = (char) _getch();
 
+		// Si cette touche n'était déjà pas appuyée
 		if (!hitted) {
+
+			// On la signale comme ayant été appuyé
 			hitted = true;
+
+			// On affiche le caractère correspondant
 			printf("%c", entry[index]);
+
+			// On passe au prochain caractère de manière cyclique
 			index = !index;
 		}
-	} else {
+	}
+	// Si une touche n'a pas été appuyé
+	else {
+		// On signale son état
 		hitted = false;
 	}
 
+	// Si le tampon d'entrée est rempli
 	if (entry[0] != 0 && entry[1] != 0) {
+
+		// On transfert son contenu à notre paramètre d'entrée 'input'
 		input[0] = entry[0];
 		input[1] = entry[1];
+
+		// On vide le tampon
 		memset(entry, 0, sizeof(char) * 2);
+
+		// On se replace au début du tampon
 		index = 0;
+
 		return true;
 	}
 	return false;
@@ -223,22 +245,26 @@ bool getKeyboardInput(char *input) {
 
 bool nonBlockingSecureGet(const Grid *grid, char input[2], Coordinate *coord, const char *msg) {
 
+	// On récupère la saisie utilisateur
 	const bool isFull = getKeyboardInput(input);
 
+	// Si la saisie est complete
 	if (isFull) {
 
 		printf("\n");
-		const bool castSuccess = strToCoord(input, coord) != SUCCESS;
 
-		memset(input, 0, 2 * sizeof(char));
-
-		if (!gridIsValidCoordinate(grid, *coord) || castSuccess) {
+		if (strToCoord(input, coord) != SUCCESS || !gridIsValidCoordinate(grid, *coord)) {
 			printf("Coordonnées invalides.\n");
 		} else if (gridIsEmptyBox(grid, *coord)) {
 			printf("Choisissez une case non-vide.\n");
 		} else {
+			memset(input, 0, 2 * sizeof(char));
 			return true;
 		}
+
+		// Réinitialisation du tampon d'entrée
+		memset(input, 0, 2 * sizeof(char));
+
 		printf(msg);
 	}
 	return false;
