@@ -37,10 +37,20 @@ size_t evaluateScore(const size_t X, const size_t N);
  * @note		Le paramètre grid est passé par pointeur
  *				afin d'être modifié au cours de la partie.
  *
- * @param[out]	grid
+ * @param[out]	grid Grille du jeu
  * @return		Score de la partie
  */
 size_t puzzleGame(Grid *grid);
 
+/**
+ * @brief		Partie en mode Rush
+ *
+ * @note		Le paramètre grid est passé par pointeur
+ *				afin d'être modifié au cours de la partie.
+ *
+ * @param[out]	grid Grille du jeu
+ * @return		Score de la partie
+ */
 size_t rushGame(Grid *grid);
+
 #endif //GAME_H

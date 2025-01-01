@@ -9,7 +9,7 @@
 
 // Nom du fichier score
 // .42, la réponse à La grande question sur la vie...
-const char* FILE_SCORE_NAME = "score.42";
+const char *FILE_SCORE_NAME = "score.42";
 
 // tableau contenant tous les joueurs
 UserScore user_score[MaxPlayers] = {};
@@ -23,7 +23,6 @@ void setUserScore(const UserScore usr_score) {
 		if (index != MaxPlayers) {
 			user_score[index] = usr_score;
 		}
-
 	}
 	// S'il existe déjà et que le score actuel est meilleur
 	// que le précédent, alors le modifier
@@ -34,9 +33,8 @@ void setUserScore(const UserScore usr_score) {
 	}
 }
 
-int userExist(const char* username) {
+int userExist(const char *username) {
 	for (int i = 0; i < MaxPlayers; i++) {
-
 		// Vérifier si deux chaînes de caractères sont égales
 		if (strcmp(user_score[i].username, username) == 0) {
 			return i;
@@ -45,13 +43,12 @@ int userExist(const char* username) {
 	return -1;
 }
 
-UserScore* getUserScore() {
+UserScore *getUserScore() {
 	return user_score;
 }
 
 int newUsernameIndex() {
 	for (int i = 0; i < MaxPlayers; i++) {
-
 		//renvoyer l'indice correspondant à la première chaîne de caractère vide
 		if (user_score[i].username[0] == '\0') {
 			return i;
@@ -61,13 +58,13 @@ int newUsernameIndex() {
 }
 
 void readUserScore() {
-	FILE* file = fopen(FILE_SCORE_NAME, "rb");
+	FILE *file = fopen(FILE_SCORE_NAME, "rb");
 	fread(user_score, sizeof(UserScore), MaxPlayers, file);
 	fclose(file);
 }
 
 void writeScore() {
-	FILE* file = fopen(FILE_SCORE_NAME, "wb");
+	FILE *file = fopen(FILE_SCORE_NAME, "wb");
 	fwrite(user_score, sizeof(UserScore), MaxPlayers, file);
 	fclose(file);
 }

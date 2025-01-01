@@ -190,6 +190,9 @@ size_t rushGame(Grid *grid) {
 					printf("Choisissez deux cases voisines a echanger\n");
 				}
 				firstCoordIsValid = secondCoordIsValid = false;
+				memset(input1, 0, 2 * sizeof(char));
+				memset(input2, 0, 2 * sizeof(char));
+
 				printf("Case 1: ");
 			}
 		}

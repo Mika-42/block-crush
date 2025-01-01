@@ -88,8 +88,26 @@ bool secureGetCase2(Grid grid, const Coordinate coord1, Coordinate *coord2);
 int readIntInRange(int min, int max, const bool display_error, const char *error_msg,
                     void (*error_process)(void));
 
-//todo comment
+/**
+ * @brief		Récupération du caractère associé à une touche si celle-ci est appuyée
+ *
+ * @param[out]	input Tampon pour récupérer la saisie d'entrée
+ *
+ * @retval		true Si le tampon est rempli
+ * @retval		false Si le tampon est vide ou partiellement vide
+ */
 bool getKeyboardInput(char *input);
 
+/**
+ * @brief		Acquisition non bloquante des données avec vérification
+ *
+ * @param[in]	grid Grille support à la vérification
+ * @param[out]	input Tampon pour récupérer la saisie
+ * @param[out]	coord Coordonnées converties
+ * @param[in]	msg Message à afficher lors de la saisie
+ *
+ * @retval		true Si la saisie respecte les règles du jeu
+ * @retval		false Si la saisie ne respecte pas les règles du jeu
+ */
 bool nonBlockingSecureGet(const Grid *grid, char input[2], Coordinate *coord,const char* msg);
 #endif //USERINPUT_H

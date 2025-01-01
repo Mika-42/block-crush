@@ -7,13 +7,28 @@
 #include "menu.h"
 #include "score.h"
 
+void setupGame() {
+
+	// Active l'affichage de l'UTF-8 dans la console Windows
+	SetConsoleOutputCP(CP_UTF8);
+
+	// Génération d'une seed aléatoire
+	srand(42); // TODO time(nullptr)
+}
+
+int startGame() {
+	char username[20];
+
+	// Récupération des scores dans le fichier
+	readUserScore();
+
+	askUsername(username);
+	return startMenu(username);
+}
+
 int main(void) {
 
-	// TODO
-	SetConsoleOutputCP(CP_UTF8);
-	srand(42); //time(nullptr)
-	char username[20];
-	readUserScore();
-	askUsername(username);
-	return startMenu(username);;
+	setupGame();
+	return startGame();
+
 }
