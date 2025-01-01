@@ -88,8 +88,8 @@ bool secureGetCase2(Grid grid, const Coordinate coord1, Coordinate *coord2);
 int readIntInRange(int min, int max, const bool display_error, const char *error_msg,
                     void (*error_process)(void));
 
-// todo comment
-bool ValidNonBlockingSecureGet(const Grid * grid, char input[2], Coordinate *coord);
+//todo comment
+bool getKeyboardInput(char *input);
 
 bool nonBlockingSecureGet(const Grid *grid, char input[2], Coordinate *coord,const char* msg);
 #endif //USERINPUT_H

@@ -186,35 +186,26 @@ int readIntInRange(int min, int max, const bool display_error, const char *error
 	}
 }
 
-bool ValidNonBlockingSecureGet(const Grid *grid, char input[2], Coordinate *coord) {
-	if (strToCoord(input, coord) != SUCCESS) {
-		printf("Coordonnées invalides.\n");
-		return false;
-	}
-
-	if (!gridIsValidCoordinate(grid, *coord)) {
-		printf("Coordonnées invalides.\n");
-		return false;
-	}
-	if (gridIsEmptyBox(grid, *coord)) {
-		printf("Choisissez une case non-vide.\n");
-		return false;
-	}
-	return true;
-}
-
 bool getKeyboardInput(char *input) {
+
+	// On déclare ces 3 variables 'static' pour qu'elles
+	// ne soient pas réinitialisé à chaque appel de la fonction
 	static bool hitted = false;
+
+	// l'indice est un booléen, car on utilise la propriété qui définie qu'un booléen revien à 0 lors de l'overflow
 	static bool index = 0;
 	static char entry[2];
 
+	// Si une touche du clavier est appuyée
 	if (_kbhit()) {
+
+		//
 		entry[index] = (char) _getch();
 
 		if (!hitted) {
 			hitted = true;
 			printf("%c", entry[index]);
-			index += 1;
+			index = !index;
 		}
 	} else {
 		hitted = false;
