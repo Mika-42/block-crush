@@ -13,7 +13,7 @@ void setupGame() {
 	SetConsoleOutputCP(CP_UTF8);
 
 	// Génération d'une seed aléatoire
-	srand(42); // TODO time(nullptr)
+	srand(time(nullptr));
 }
 
 int startGame() {

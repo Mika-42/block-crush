@@ -46,7 +46,7 @@ constexpr size_t MaxPlayers = 256;
  *
  * @brief	Constante globale indiquant l'intervalle de temps en  seconde du mode Rush
  */
-constexpr size_t rushModeTimeInterval_s = 15; //todo
+constexpr size_t rushModeTimeInterval_s = 15;
 
 /**
  * @var		constexpr char Letter[4]
