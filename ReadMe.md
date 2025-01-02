@@ -2,6 +2,14 @@
 + Version du C : 23
 + Compilateur : gcc
 + OS cible : Windows
-+ chemin de l'exécutable : ./cmake-build-debug/projet_info.exe
 
+## Compilation
+### Cmake commande
+```
+cmake -S . -B build
+cmake --build build
+```
+chemin de l'exécutable : ./projet_info/build/projet_info.exe
 
+### Clion
+ouverture et compilation du projet avec clion
